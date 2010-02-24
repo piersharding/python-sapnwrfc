@@ -195,7 +195,7 @@ LONG_DESCRIPTION = """\
 sapnwrfc - A Python RFC interface to SAP NetWeaver R/3 systems
 --------------------------------------------------------------
 
-Copyright (C) Piers Harding 2006 - 2009, All rights reserved
+Copyright (C) Piers Harding 2006 - 2010, All rights reserved
 
 == Summary
 
@@ -224,7 +224,7 @@ Please insure that the following software is installed:
 
 Python 2.6:
 (Tested with ActivePython 2.6.2.2  
-based on Python 2.6.2 (r262:71600, Apr 21 2009, 15:05:37) 
+based on Python 2.6.2 (r262:71600, Apr 21 2010, 15:05:37) 
 [MSC v.1500 32 bit (Intel)])
 This can be found at: http://www.activestate.com/activepython/
 
@@ -246,7 +246,7 @@ I appreciate bug reports and patches, just mail me! piers@ompka.net
 For issues regarding this windows installer please mail also 
 Menelaos Maglis at mmaglis@metacom.gr
 
-sapnwrfc is Copyright (c) 2006 - 2009 Piers Harding.
+sapnwrfc is Copyright (c) 2006 - 2010 Piers Harding.
 It is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
 License as published by the Free Software Foundation; either

@@ -2,7 +2,7 @@
 sapnwrfc - A Python interface to SAP NetWeaver R/3 systems using the RFC protocol
 ---------------------------------------------------------------------------------
 
-Copyright (C) Piers Harding 2006 - 2009, All rights reserved
+Copyright (C) Piers Harding 2006 - 2010, All rights reserved
 
 == Summary
 
@@ -25,7 +25,7 @@ See the file INSTALL for installation instructions.
 Bugs:
 I appreciate bug reports and patches, just mail me! piers@ompka.net
 
-sapnwrfc is Copyright (c) 2006 - 2009 Piers Harding.
+sapnwrfc is Copyright (c) 2006 - 2010 Piers Harding.
 It is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
 License as published by the Free Software Foundation; either
