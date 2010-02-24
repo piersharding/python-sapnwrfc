@@ -1,0 +1,872 @@
+\documentclass{howto}
+
+\title{Python saprfc Manual}
+
+\release{0.5.0}
+
+\author{Piers Harding}
+\authoraddress{\email{piers@ompa.net}}
+
+\usepackage[english]{babel}
+\usepackage[T1]{fontenc}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+\noindent
+saprfc is a Python module to facilitate RFC calls to an SAP R/3 system of 
+release 3.1x or above.  The fundamental purpose of the production of this 
+package, is to provide a clean object oriented interface to RFC calls from 
+within Python.
+\end{abstract}
+
+\tableofcontents
+
+
+\section{License \label{license}}
+
+saprfc is Copyright (c) 2002-2006 Piers Harding.
+It is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 2 of the License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
+
+A copy of the GNU Lesser General Public License (version 2.1) is included in
+the file COPYING.
+
+
+\section{Introduction \label{intro}}
+
+Welcome to the saprfc Python module.  This module is intended to facilitate RFC calls to an SAP R/3 system of release 3.1x and above.  It may work for earlier versions but it hasn't been tested.
+The fundamental purpose of the production of this package, is to provide a clean object oriented interface to RFC calls from within Python.  This will hopefully have a number of effects:
+(1) make it really easy to do RFC calls to SAP from Python in an object oriented fashion (Doh!)
+(2) promote Python as the interface/scripting/glue language of choice for interaction with SAP R/3.
+(3) make the combination of Linux, Apache, and Python the killer app for internet connectivity with SAP.
+(4) Establish a small fun open source project that people are more than welcome to contribute to, if they so wish.
+
+With this in mind - this package has been developed under Linux, so the installation is therefore focused on this.  This does not mean that it will not work on other UNIX like flavours - to the contrary it probably will, it just hasn't been tested.
+
+
+\section{Building and Installing \label{building}}
+
+These instructions can also be found in the file \verb|INSTALL|.
+
+I have tested this on RedHat Linux systems (9).
+
+\subsection{Building the Module on a Unix System \label{building-unix}}
+
+saprfc requires python 2.3 or better.  This is because of the use of generators and 
+the \verb|yield|, and for the use of properties handled by set/get methods.
+
+saprfc uses distutils, so there really shouldn't be any problems. To build
+the library:
+\begin{verbatim}
+python setup.py build
+\end{verbatim}
+
+If your librfc or librfccm (rfcsdk) header files aren't in \verb|/usr/sap/rfcsdk/include|, you 
+may need to supply the \verb|-I| flag to let the setup script know where to look. 
+The same goes for the libraries of course, use the \verb|-L| flag. Note that
+\verb|build| won't accept these flags, so you have to run first
+\verb|build_ext| and then \verb|build|! Example:
+\begin{verbatim}
+python setup.py build_ext -I/usr/sap/rfcsdk/include -L/usr/sap/rfcsdk/lib
+python setup.py build
+\end{verbatim}
+
+Then:
+
+\begin{verbatim}
+python setup.py install
+\end{verbatim}
+
+If you, for some arcane reason, don't want the module to appear in the
+\verb|site-packages| directory, use the \verb|--prefix| option.
+
+You can, of course, do
+\begin{verbatim}
+python setup.py --help
+\end{verbatim}
+
+to find out more about how to use the script.
+
+
+\section{module \module{saprfc} \label{modsaprfc}}
+
+\declaremodule{extension}{saprfc}
+\modulesynopsis{Python interface to SAP R/3 systems}
+
+Module \module{saprfc} is the container for all of the SAP R/3 connection
+and data handling classes.  It also pulls in the C extension module
+\module{saprfcutil}, which handles all the communication with \code{librfc} (or \code{librfccm}).
+
+The bes way to get started is with an example.  This example connects
+to an SAP R/3 system, and does various calls setting the value of parameters,
+and then extracting the resulting data after the call.
+
+Note: check the examples directory of this distribution for more code bites.
+
+\strong{RFC call - client to R/3}
+
+
+This scenario is for when you want to call from your client program to an SAP R/3 instance.
+
+
+\begin{verbatim}
+	import saprfc
+	conn = saprfc.conn(ashost='localhost', sysnr='00', client='000',
+	                   user='developer', passwd='developer', trace=1)
+	conn.connect()
+	print "am I connected: ", conn.is_connected()
+	print "sysinfo is: ", conn.sapinfo()
+
+	iface = conn.discover("RFC_READ_TABLE")
+	iface.query_table.setValue("TRDIR")
+	iface.ROWCOUNT.setValue(10)
+	iface.OPTIONS.setValue( ["NAME LIKE 'SAPL%RFC%'"] )
+
+	conn.callrfc( iface )
+
+	print "NO. PROGS: ", iface.DATA.rowCount(), " \n"
+	print "PROGS DATA RAW: ", iface.DATA.value, " \n"
+
+	# get the SAP Data Dictionary structure for TRDIR
+	str = conn.structure("TRDIR")
+
+	# various ways for iterating over the results in an
+	#  interface table
+	for x in iface.data.value:
+	  print "Doing: " + str.toHash(x)['NAME']
+
+	print "PROGS HASH ROWS: "
+	for i in iface.DATA.hashRows():
+		print "next row: ", i
+
+	conn.close()
+\end{verbatim}
+
+
+\strong{R/3 to Registered RFC Server program}
+
+
+This scenario is for when you want to create a server program that an R/3 instance can call via RFC within ABAP.
+
+
+\begin{verbatim}
+class reg:
+
+	def __init__(self):
+		self.cnt = 0
+		import os
+
+	def LoopHandler(self, srfc):
+		self.cnt += 1
+		print "inside the customer loop handler - iter: %d ...\n" % self.cnt
+		if self.cnt >= 30:
+			return -1
+		return 1
+
+	def handler(self, iface, srfc):
+		data = []
+		print "COMMAND is: #" + iface.COMMAND.getValue() + "#"
+		out = os.popen(iface.COMMAND.getValue(), "r")
+		for row in out:
+			data.append(row)
+		out.close()
+		iface.PIPEDATA.setValue( data )
+		return 1
+
+if __name__ == "__main__":
+	import saprfc
+
+	conn = saprfc.conn(gwhost='seahorse.local.net', gwserv='3300', tpname='wibble.rfcexec')
+
+	cb = reg()
+
+	ifc = saprfc.iface("RFC_REMOTE_PIPE", callback=cb)
+	ifc.addParm( saprfc.parm("COMMAND", "", saprfc.RFCIMPORT, saprfc.RFCTYPE_CHAR, 256))
+	ifc.addParm( saprfc.parm("READ", "", saprfc.RFCIMPORT, saprfc.RFCTYPE_CHAR, 1))
+	ifc.addParm( saprfc.tab("PIPEDATA", "", 80))
+
+	conn.iface(ifc)
+
+	conn.accept(callback=cb, wait=3)
+	#conn.accept(wait=3)
+	print "All finished (reg.py) \n"
+
+\end{verbatim}
+
+
+
+\strong{R/3 to Registered RFC Server program with tRFC}
+
+
+This scenario is for when you want to create a server program that an R/3 instance can call via RFC within ABAP, using transaction (queued) RFC.
+
+
+\begin{verbatim}
+class reg:
+
+	def __init__(self):
+		self.cnt = 0
+		import os
+
+	def LoopHandler(self, srfc):
+		self.cnt += 1
+		print "inside the customer loop handler - iter: %d ...\n" % self.cnt
+		if self.cnt >= 300:
+			return -1
+		return 1
+
+	def handler(self, iface, srfc, tid):
+		data = []
+		print "TID (reg.handler) is: #" + tid + "#"
+		print "COMMAND is: #" + iface.COMMAND.getValue() + "#"
+		out = os.popen(iface.COMMAND.getValue(), "r")
+		for row in out:
+			data.append(row)
+		out.close()
+		iface.PIPEDATA.setValue( data )
+		return 1
+
+	def TRFCCheck(self, srfc, tid):
+		print "TID (TRFCCheck) is: #" + tid + "#"
+		return False
+
+	def TRFCCommit(self, srfc, tid):
+		print "TID (TRFCCommit) is: #" + tid + "#"
+		return
+
+	def TRFCConfirm(self, srfc, tid):
+		print "TID (TRFCConfirm) is: #" + tid + "#"
+		return
+
+	def TRFCRollback(self, srfc, tid):
+		print "TID (TRFCRollback) is: #" + tid + "#"
+		return
+
+if __name__ == "__main__":
+	import saprfc
+
+	cb = reg()
+
+	conn = saprfc.conn(gwhost='seahorse.local.net', gwserv='3300', tpname='wibble.rfcexec', trfc=cb)
+
+	ifc = saprfc.iface("RFC_REMOTE_PIPE", callback=cb)
+	ifc.addParm( saprfc.parm("COMMAND", "", saprfc.RFCIMPORT, saprfc.RFCTYPE_CHAR, 256))
+	ifc.addParm( saprfc.parm("READ", "", saprfc.RFCIMPORT, saprfc.RFCTYPE_CHAR, 1))
+	ifc.addParm( saprfc.tab("PIPEDATA", "", 80))
+
+	conn.iface(ifc)
+
+	conn.accept(callback=cb, wait=5)
+	print "All finished (trfc_reg.py) \n"
+\end{verbatim}
+
+
+
+\subsection{class \class{conn} \label{classconn}}
+
+The \class{conn} Class works in concert with several other Classes that
+also come with same distribution, these are \class{iface}, \class{parm},
+\class{tab}, and \class{struct}.  These come
+together to give you an object oriented programming interface for
+performing RFC function calls to SAP from a UNIX based platform with
+your favourite programming language - Python.
+A \class{conn} object holds together one ( and only one ) connection to an
+SAP system at a time.  The \class{conn} object can use one or many \class{iface}
+objects, each of which equate to the definition of an RFC Function in
+SAP ( see trans SE37 ). Each \class{iface} object holds one or many
+\class{parm}, and/or \class{tab} objects, corresponding to
+the RFC Interface definition in SAP ( SE37 ).
+For all \class{tab} objects, and for complex \class{parm} objects,
+a \class{struct} object can be defined.  This equates to a
+structure definition in the data dictionary ( see trans SE11 ).
+Because the manual definition of interfaces and structures is a boring
+and tiresome exercise, there are specific methods provided to 
+automatically discover, and add the appropriate interface definitions
+for an RFC Function module to the \class{conn} object ( see methods
+discover, and structure of \class{conn} ).
+
+
+\begin{funcdesc}{conn}{\optional{ashost="localhost", sysnr=18, lang="EN", client=000, user="DEVELOPER", passwd="19920706", trace=1}}
+creates a new RFC connection object.
+\end{funcdesc}
+
+
+\subsubsection{Attributes \label{connattrs}}
+
+\begin{memberdesc}[conn]{ashost}
+    Hostname connected to 
+\end{memberdesc}
+
+\begin{memberdesc}[conn]{sysnr}
+    System number to connected to
+\end{memberdesc}
+
+\begin{memberdesc}[conn]{lang}
+    Language logged in 
+\end{memberdesc}
+
+\begin{memberdesc}[conn]{client}
+    Client number logged in to
+\end{memberdesc}
+
+\begin{memberdesc}[conn]{user}
+    User name
+\end{memberdesc}
+
+\begin{memberdesc}[conn]{passwd}
+    Password
+\end{memberdesc}
+
+\begin{memberdesc}[conn]{trace}
+    Trace mode of connection - set to 0 or 1
+\end{memberdesc}
+
+\begin{memberdesc}[conn]{connection}
+    The current connection ID
+\end{memberdesc}
+
+\begin{memberdesc}[conn]{gwhost}
+    The host name (or IP address) of the SAP R/3 gateway server (usually listens on 3300).
+\end{memberdesc}
+
+\begin{memberdesc}[conn]{gwserv}
+    The port number of the SAP R/3 gateway server (usually listening on 3300).
+\end{memberdesc}
+
+\begin{memberdesc}[conn]{tpname}
+    The program name that is used as the registered name in the SAP R/3 gateway - by convention this is usually <hostname>.<programname>, but can be anything.  this must correspond with the name in the registered RFC setup in transaction SM59.
+\end{memberdesc}
+
+\begin{memberdesc}[conn]{trfc}
+    The instance of an object that has the callback methods for tRFC handling.  See this example:
+
+
+\begin{verbatim}
+class reg:
+
+	def __init__(self):
+		self.cnt = 0
+		import os
+
+...
+
+	def TRFCCheck(self, srfc, tid):
+		print "TID (TRFCCheck) is: #" + tid + "#"
+		return False
+
+	def TRFCCommit(self, srfc, tid):
+		print "TID (TRFCCommit) is: #" + tid + "#"
+		return
+
+	def TRFCConfirm(self, srfc, tid):
+		print "TID (TRFCConfirm) is: #" + tid + "#"
+		return
+
+	def TRFCRollback(self, srfc, tid):
+		print "TID (TRFCRollback) is: #" + tid + "#"
+		return
+\end{verbatim}
+
+The class must have the 4 defined methods to handle the various stages of tRFC (Queued RFC).  If the TRFCCheck method returns True, then the Registered RFC program is acknowledging that it has allready processed the transaction, so by default it should usually return False.
+
+\end{memberdesc}
+
+\subsubsection{Methods \label{connmeths}}
+
+\begin{methoddesc}[conn]{discover}{name="\var{RFC_READ_REPORT}"}
+
+Used to look up the definition of an RFC interface.  Returns an instance of \class{iface}.  This also 
+automatically defines any associated \class{parm}, \class{tab}, \class{struct}, and \class{field} objects
+that come together to describe a complete RFC Interface.
+
+\end{methoddesc}
+
+
+
+\begin{methoddesc}[conn]{structure}{name="\var{TRDIR}"}
+Discover and return the definition of a valid data dictionary structure.  This could be subsequently used in association with an \class{parm}, or \class{tab} object.  Returns a \class{struct} object.
+\end{methoddesc}
+
+
+\begin{methoddesc}[conn]{is_connected}{}
+Test that the conn object is still connected to the SAP system.  Returns true or false.
+\end{methoddesc}
+
+
+\begin{methoddesc}[conn]{sapinfo}{}
+Return a hash of the values supplied by the \var{RFC_SYSTEM_INFO} function module.  This function is only properly called once, and the data is cached until the RFC connection is closed - then it will be reset next call.
+\end{methoddesc}
+  
+
+\begin{methoddesc}[conn]{callrfc}{iface=\class{iface}}
+Do the actual RFC call - this installs all the Export, Import, and Table Parameters in the actual C library of the extension, does the RFC call, Retrieves the table contents, and import parameter contents, and then cleans the libraries storage space again.
+\end{methoddesc}
+  
+
+\begin{methoddesc}[conn]{accept}{wait=<RFC loop wait interval>, callback=\class{callback handler instance}}
+   Is the method that launches a registered RFC application into the wait, request, event loop cycle.
+   The callback handler is as described in the above examples and must have the method LoopHandler if it is supplied at all (if it isnt supplied - the event is ignored):
+
+\begin{verbatim}
+class reg:
+
+	def __init__(self):
+		self.cnt = 0
+		import os
+
+	def LoopHandler(self, srfc):
+		self.cnt += 1
+		print "inside the customer loop handler - iter: %d ...\n" % self.cnt
+		if self.cnt >= 30:
+			return -1
+		return 1
+....
+
+\end{verbatim}
+
+   If the LoopHandler() returns < 1, then this is a signal for the accept() loop to exit.
+
+\end{methoddesc}
+
+
+\begin{methoddesc}[conn]{close}{}
+Close the current open RFC connection to an SAP system.
+\end{methoddesc}
+
+
+\subsection{class \class{iface} \label{classiface}}
+
+\class{iface} - Python extension for parsing and creating an Interface Object.  The interface object would then be passed to the \class{conn} object to carry out the actual call, and return of values.
+
+Generally you would not create one of these manually as it is far easier to use the "discovery" functionality of the \code{conn.discover(name="RFCNAME")} method.  This returns a fully formed interface object.  This is achieved by using standard RFCs supplied by SAP to look up the definition of an RFC interface and any associated structures.
+
+
+Note: as per the examples above, this IS generally created manually for registered RFC applications.
+
+\begin{verbatim}
+	import saprfc
+	iface = iface("RFCNAME")
+\end{verbatim}
+
+or more commonly:
+
+\begin{verbatim}
+	import saprfc
+	conn = saprfc.conn()
+	conn.connect()
+	iface = conn.discover("RFC_READ_TABLE")
+\end{verbatim}
+
+\begin{funcdesc}{iface}{name="Z_AN_RFC", callback=<registered RFC callback instance handler> }
+creates a new RFC Interface object.
+\end{funcdesc}
+
+
+\subsubsection{Attributes \label{ifaceattrs}}
+
+\begin{memberdesc}[iface]{name}
+    Name of the interface
+\end{memberdesc}
+
+\begin{memberdesc}[iface]{parms}
+    Array of interface parameter objects
+\end{memberdesc}
+
+\begin{memberdesc}[iface]{callback}
+    a reference to an object instance that has the necessary callback handlers for controling a registered RFC:
+
+\begin{verbatim}
+class reg:
+
+	def __init__(self):
+		self.cnt = 0
+		import os
+
+....
+
+	def handler(self, iface, srfc):
+		data = []
+		print "COMMAND is: #" + iface.COMMAND.getValue() + "#"
+		out = os.popen(iface.COMMAND.getValue(), "r")
+		for row in out:
+			data.append(row)
+		out.close()
+		iface.PIPEDATA.setValue( data )
+		return 1
+
+\end{verbatim}
+   The handler method gets passed the original instance of the saprfc.iface object, and the saprfc.conn object.
+   The saprfc.conn object has a member sapinfo which returns a dictionary of the current connection details (updated for each registered RFC call).
+
+   In tRFC (transaction RFC), the handler gets passed an additional parameter - the Transaction ID (TID), like so:
+
+\begin{verbatim}
+class reg:
+
+	def __init__(self):
+		self.cnt = 0
+		import os
+
+....
+
+	def handler(self, iface, srfc, tid):
+		data = []
+		print "TID (reg.handler) is: #" + tid + "#"
+		print "COMMAND is: #" + iface.COMMAND.getValue() + "#"
+		out = os.popen(iface.COMMAND.getValue(), "r")
+		for row in out:
+			data.append(row)
+		out.close()
+		iface.PIPEDATA.setValue( data )
+		return 1
+
+....
+
+\end{verbatim}
+
+
+\end{memberdesc}
+
+
+\subsubsection{Methods \label{ifacemeths}}
+
+\begin{methoddesc}[iface]{<name of parameter>}{}
+
+\begin{verbatim}
+	import saprfc
+	iface = conn.discover("RFC_READ_TABLE")
+	iface.query_table.setValue("TRDIR")
+\end{verbatim}
+
+Returns the object of the given parameter either an \class{tab}, or \class{parm} object.
+
+\end{methoddesc}
+
+\begin{methoddesc}[iface]{addParm}{<\class{parm} | \class{tab}>}
+
+Add an RFC interface parameter to the \class{iface} definition - see \class{parm}, and \class{tab}
+
+\end{methoddesc}
+
+
+\begin{methoddesc}[iface]{getParm}{name="name of parameter"}
+
+Get a named parameter object - returns the object either a \class{parm} or \class{tab} instance.
+
+\end{methoddesc}
+
+
+\begin{methoddesc}[iface]{reset}{}
+
+Empty all the tables and reset paramters to their default values - useful when you are doing multiple calls.
+
+\end{methoddesc}
+
+
+
+\subsection{class \class{parm} \label{classparm}}
+
+\class{parm} - Python extension for parsing and creating an SAP parameter to be added to an RFC Interface.
+
+Generally you would not create one of these manually as it is far easier to use the "discovery" functionality of the \code{\class{conn}.discover("RFCNAME")} method.  This returns a fully formed interface object.  This is achieved by using standard RFCs supplied by SAP to look up the definition of an RFC interface and any associated structures.
+
+\begin{verbatim}
+	import saprfc
+	eparam = parm(name, structure, RFCEXPORT, datatype, intlen, decs, default, default)
+\end{verbatim}
+
+
+\begin{funcdesc}{parm}{name="a name", structure="structure if complex", RFCEXPORT | RFCIMPORT, datatype="SAP datatype", intlen="internal parameter length", decs="decimal places", value="value", default="default value for reset"}
+creates a new RFC Interface Parameter object.  This is either an import or export parameter (Export for parameters going into a call, Import for parameter values as a result of a call).
+\end{funcdesc}
+
+
+\subsubsection{Attributes \label{parmattrs}}
+
+\begin{memberdesc}[parm]{name}
+    Name of the parameter
+\end{memberdesc}
+
+\begin{memberdesc}[parm]{type}
+    Type either RFCEXPORT | RFCIMPORT
+\end{memberdesc}
+
+\begin{memberdesc}[parm]{intype}
+    Internal SAP data type
+\end{memberdesc}
+
+\begin{memberdesc}[parm]{len}
+     Length of the parameter value stored
+\end{memberdesc}
+
+\begin{memberdesc}[parm]{decimals}
+     number of decimal places  | 0
+\end{memberdesc}
+
+\begin{memberdesc}[parm]{default}
+     default value as specified by the Interface definition in SE37
+\end{memberdesc}
+
+\begin{memberdesc}[parm]{structure}
+     \class{struct} object for complex paramter types | nil
+\end{memberdesc}
+
+\begin{memberdesc}[parm]{changed}
+     true | false if a parameter has been changed
+\end{memberdesc}
+
+\begin{memberdesc}[parm]{value}
+     external representation of current parameter value
+\end{memberdesc}
+
+
+\subsubsection{Methods \label{parmmeths}}
+
+\begin{methoddesc}[parm]{reset}{}
+
+Reset the parameter value to its default
+
+\end{methoddesc}
+
+
+\begin{methoddesc}[parm]{setValue}{value}
+
+Assign the value of the parameter - automatically converts the external (Python) value to the 
+internal SAP representation.
+
+\end{methoddesc}
+
+
+\begin{methoddesc}[parm]{getValue}{}
+
+Retrieve the value of the parameter - automatically converts the internal SAP representation to a Python value.
+
+\end{methoddesc}
+
+
+\subsection{class \class{tab} \label{classtab}}
+
+\class{tab} - Python extension for parsing and creating Tables to be added to an RFC Interface.
+
+Generally you would not create one of these manually as it is far easier to use the "discovery" functionality of the \code{\class{conn}.discover("RFCNAME")} method.  This returns a fully formed interface object.  This is achieved by using standard RFCs supplied by SAP to look up the definition of an RFC interface and any associated structures.
+
+\begin{verbatim}
+	import saprfc
+  	tab = tab(name="table name", structure=struct, len=int, value=[]))
+\end{verbatim}
+
+
+\begin{funcdesc}{tab}{name="table name", structure=\class{struct}, len=int, value=[]}
+creates a new RFC Interface Table object.  Tables are populated with rows of data to pass into an
+RFC call, and then refresed with the results of the call afterwards.
+\end{funcdesc}
+
+
+\subsubsection{Attributes \label{tabattrs}}
+
+\begin{memberdesc}[tab]{name}
+    Name of the parameter
+\end{memberdesc}
+
+\begin{memberdesc}[parm]{len}
+     Length of the parameter value stored
+\end{memberdesc}
+
+\begin{memberdesc}[parm]{structure}
+     \class{struct} object for complex paramter types | nil
+\end{memberdesc}
+
+\begin{memberdesc}[parm]{value}
+     access to the Array object containing the rows of the table (use push to add to it)
+\end{memberdesc}
+
+
+\subsubsection{Methods \label{tabmeths}}
+
+\begin{methoddesc}[parm]{reset}{}
+
+Reset the parameter value to its default
+
+\end{methoddesc}
+
+
+\begin{methoddesc}[parm]{setValue}{[...]}
+
+Pass in an Array object of rows, that are converted and assigned to the table.
+
+\end{methoddesc}
+
+
+\begin{methoddesc}[parm]{hashRows}{}
+
+Yields a Hash object representing the name/value pairs for each
+field of a row of table data - shifts the values off the table value Array.
+
+\end{methoddesc}
+
+
+\subsection{class \class{struct} \label{classstruct}}
+
+
+== Class \class{struct}
+
+\class{struct} - Python extension for parsing and creating Structure definitions to be added to an RFC Parameter and Table objects.
+
+Generally you would not create one of these manually as it is far easier to use the "discovery" functionality of the \class{conn}.discover("RFCNAME") method.  This returns a fully formed interface object.  This is achieved by using standard RFCs supplied by SAP to look up the definition of an RFC interface and any associated structures.
+
+\begin{verbatim}
+	import saprfc
+	s = struct(name="struct_name")
+	s.addField( field(field, exid, decs, intlen, off)
+	...
+\end{verbatim}
+
+or more commonly:
+
+\begin{verbatim}
+	import saprfc
+	rfc = conn(...)
+	str = rfc.structure("TRDIR")
+\end{verbatim}
+
+\begin{funcdesc}{struct}{name="DDIC structure name"}
+creates a new RFC Structure object. You must subsequently add fields to this structure
+for it to be of any use.  The resulting structure object is then used for \class{parm}s,
+and \class{tab} objects to manipulate complex data elements.
+This is normally created through the \class{conn}.structure('STRUCT_NAME') method that does an auto look up of the data dictionary definition of a structure, or as a result of \class{conn}.discover ( which create an entire interface definition).
+\end{funcdesc}
+
+
+\subsubsection{Attributes \label{structattrs}}
+
+\begin{memberdesc}[struct]{name}
+    Name of the Structure
+\end{memberdesc}
+
+\begin{memberdesc}[struct]{fields}
+    an Array of the fields of the structure
+\end{memberdesc}
+
+
+\subsubsection{Methods \label{structmeths}}
+
+\begin{methoddesc}[struct]{addField}{field=\class{field}}
+
+Add a field object to the structure definition
+
+\end{methoddesc}
+
+
+\begin{methoddesc}[struct]{getField}{field="name of field"}
+
+Get a \class{field} object from the structure by name.
+
+\end{methoddesc}
+
+
+\begin{methoddesc}[struct]{toHash}{value="string value of struct"}
+
+Set the value of a structure - this automatically unpacks the string into the structure
+objects list of fields, and doe sthe SAP to Python data type conversions. Returns a Hash
+object of the fieldname/value pairs of the structure.
+
+\end{methoddesc}
+
+
+\begin{methoddesc}[struct]{pack}{}
+
+Automatically packs the current value of all the structure fields into the structure
+and returns the complete value as a string (in all the appropriate SAP data types)
+
+\end{methoddesc}
+
+
+\subsection{class \class{field} \label{classfield}}
+
+\class{field} - Container for what is a field within an \class{struct} object
+
+Generally you would not create one of these manually as it is far easier to use the "discovery" functionality of the \class{conn}.discover("RFCNAME") method.  This returns a fully formed interface object.  This is achieved by using standard RFCs supplied by SAP to look up the definition of an RFC interface and any associated structures.
+
+
+\begin{verbatim}
+	import saprfc
+	f = field(field, type, decs, intlen, off)
+	...
+\end{verbatim}
+
+
+\subsubsection{Attributes \label{fieldattrs}}
+
+\begin{memberdesc}[field]{name}
+    Name of the field
+\end{memberdesc}
+
+\begin{memberdesc}[field]{intype}
+    Internal SAP data type
+\end{memberdesc}
+
+\begin{memberdesc}[field]{len}
+     Length of the field value stored
+\end{memberdesc}
+
+\begin{memberdesc}[field]{decimals}
+     number of decimal places  | 0
+\end{memberdesc}
+
+\begin{memberdesc}[field]{offset}
+     offset in the structure
+\end{memberdesc}
+
+\begin{memberdesc}[field]{value}
+     external representation of current parameter value
+\end{memberdesc}
+
+
+\subsubsection{Methods \label{fieldmeths}}
+
+\begin{methoddesc}[field]{reset}{}
+
+Reset the parameter value to its default
+
+\end{methoddesc}
+
+
+
+\section{module \module{saprfcutil} \label{modsaprfcutil}}
+
+the \module{saprfcutil} module contains all the C extension functions that are exported 
+for use within the Python module \module{saprfc}.
+
+\begin{funcdesc}{connect}{ashost, sysnr, lang, client, user, passwd, trace}
+C function that takes all the RFC connection arguments to produce a connection to
+an SAP R/3 system
+\end{funcdesc}
+
+\begin{funcdesc}{call_receive}{instance, iface}
+C function that takes two arguments - a \class{conn} object instance, and a
+\class{iface} object instance.  This function then uses the RFC connection id
+and the contents of the Interface object to construct a call to the R/3 system.
+The results are then converted back into the Interface object for user access.
+\end{funcdesc}
+
+\begin{funcdesc}{accept_receive}{instance}
+C function that takes one argument - a \class{conn} object instance.
+This is purely to facilitate the binding to the SAP RFC library for the registered RFC accept() loop.
+\end{funcdesc}
+
+\begin{funcdesc}{close}{connection}
+C function that uses an RFC connection id to close a connection.
+\end{funcdesc}
+
+
+\end{document}

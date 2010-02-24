@@ -1,0 +1,318 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+<title>4 module saprfc </title>
+<META NAME="description" CONTENT="4 module saprfc ">
+<META NAME="keywords" CONTENT="saprfc">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+<link rel="STYLESHEET" href="saprfc.css">
+<LINK REL="next" href="modsaprfcutil.html">
+<LINK REL="previous" href="building.html">
+<LINK REL="up" HREF="saprfc.html">
+<LINK REL="next" href="classconn.html">
+</head>
+<body>
+<DIV CLASS="navigation">
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><A href="building-unix.html"><img src="previous.gif"
+border="0" height="32"
+  alt="Previous Page" width="32"></A></td>
+<td><A HREF="saprfc.html"><img src="up.gif"
+border="0" height="32"
+  alt="Up One Level" width="32"></A></td>
+<td><A href="classconn.html"><img src="next.gif"
+border="0" height="32"
+  alt="Next Page" width="32"></A></td>
+<td align="center" width="100%">Python saprfc Manual</td>
+<td><A href="contents.html"><img src="contents.gif"
+border="0" height="32"
+  alt="Contents" width="32"></A></td>
+<td><img src="blank.gif"
+  border="0" height="32"
+  alt="" width="32"></td>
+<td><img src="blank.gif"
+  border="0" height="32"
+  alt="" width="32"></td>
+</tr></table>
+<b class="navlabel">Previous:</b> <a class="sectref" href="building-unix.html">3.1 Building the Module</A>
+<b class="navlabel">Up:</b> <a class="sectref" HREF="saprfc.html">Python saprfc Manual</A>
+<b class="navlabel">Next:</b> <a class="sectref" href="classconn.html">4.1 class conn</A>
+<br><hr>
+</DIV>
+<!--End of Navigation Panel-->
+<H1><A NAME="SECTION000500000000000000000">&nbsp;</A>
+<BR>
+4 module <tt class="module">saprfc</tt> 
+</H1>
+
+<P>
+
+
+<P>
+Module <tt class="module">saprfc</tt> is the container for all of the SAP R/3 connection
+and data handling classes.  It also pulls in the C extension module
+<tt class="module">saprfcutil</tt>, which handles all the communication with <code>librfc</code> (or <code>librfccm</code>).
+
+<P>
+The bes way to get started is with an example.  This example connects
+to an SAP R/3 system, and does various calls setting the value of parameters,
+and then extracting the resulting data after the call.
+
+<P>
+Note: check the examples directory of this distribution for more code bites.
+
+<P>
+<b>RFC call - client to R/3</b>
+
+<P>
+This scenario is for when you want to call from your client program to an SAP R/3 instance.
+
+<P>
+<dl><dd><pre class="verbatim">
+	import saprfc
+	conn = saprfc.conn(ashost='localhost', sysnr='00', client='000',
+	                   user='developer', passwd='developer', trace=1)
+	conn.connect()
+	print "am I connected: ", conn.is_connected()
+	print "sysinfo is: ", conn.sapinfo()
+
+	iface = conn.discover("RFC_READ_TABLE")
+	iface.query_table.setValue("TRDIR")
+	iface.ROWCOUNT.setValue(10)
+	iface.OPTIONS.setValue( ["NAME LIKE 'SAPL%RFC%'"] )
+
+	conn.callrfc( iface )
+
+	print "NO. PROGS: ", iface.DATA.rowCount(), " \n"
+	print "PROGS DATA RAW: ", iface.DATA.value, " \n"
+
+	# get the SAP Data Dictionary structure for TRDIR
+	str = conn.structure("TRDIR")
+
+	# various ways for iterating over the results in an
+	#  interface table
+	for x in iface.data.value:
+	  print "Doing: " + str.toHash(x)['NAME']
+
+	print "PROGS HASH ROWS: "
+	for i in iface.DATA.hashRows():
+		print "next row: ", i
+
+	conn.close()
+</pre></dl>
+
+<P>
+<b>R/3 to Registered RFC Server program</b>
+
+<P>
+This scenario is for when you want to create a server program that an R/3 instance can call via RFC within ABAP.
+
+<P>
+<dl><dd><pre class="verbatim">
+class reg:
+
+	def __init__(self):
+		self.cnt = 0
+		import os
+
+	def LoopHandler(self, srfc):
+		self.cnt += 1
+		print "inside the customer loop handler - iter: %d ...\n" % self.cnt
+		if self.cnt &gt;= 30:
+			return -1
+		return 1
+
+	def handler(self, iface, srfc):
+		data = []
+		print "COMMAND is: #" + iface.COMMAND.getValue() + "#"
+		out = os.popen(iface.COMMAND.getValue(), "r")
+		for row in out:
+			data.append(row)
+		out.close()
+		iface.PIPEDATA.setValue( data )
+		return 1
+
+if __name__ == "__main__":
+	import saprfc
+
+	conn = saprfc.conn(gwhost='seahorse.local.net', gwserv='3300', tpname='wibble.rfcexec')
+
+	cb = reg()
+
+	ifc = saprfc.iface("RFC_REMOTE_PIPE", callback=cb)
+	ifc.addParm( saprfc.parm("COMMAND", "", saprfc.RFCIMPORT, saprfc.RFCTYPE_CHAR, 256))
+	ifc.addParm( saprfc.parm("READ", "", saprfc.RFCIMPORT, saprfc.RFCTYPE_CHAR, 1))
+	ifc.addParm( saprfc.tab("PIPEDATA", "", 80))
+
+	conn.iface(ifc)
+
+	conn.accept(callback=cb, wait=3)
+	#conn.accept(wait=3)
+	print "All finished (reg.py) \n"
+</pre></dl>
+
+<P>
+<b>R/3 to Registered RFC Server program with tRFC</b>
+
+<P>
+This scenario is for when you want to create a server program that an R/3 instance can call via RFC within ABAP, using transaction (queued) RFC.
+
+<P>
+<dl><dd><pre class="verbatim">
+class reg:
+
+	def __init__(self):
+		self.cnt = 0
+		import os
+
+	def LoopHandler(self, srfc):
+		self.cnt += 1
+		print "inside the customer loop handler - iter: %d ...\n" % self.cnt
+		if self.cnt &gt;= 300:
+			return -1
+		return 1
+
+	def handler(self, iface, srfc, tid):
+		data = []
+		print "TID (reg.handler) is: #" + tid + "#"
+		print "COMMAND is: #" + iface.COMMAND.getValue() + "#"
+		out = os.popen(iface.COMMAND.getValue(), "r")
+		for row in out:
+			data.append(row)
+		out.close()
+		iface.PIPEDATA.setValue( data )
+		return 1
+
+	def TRFCCheck(self, srfc, tid):
+		print "TID (TRFCCheck) is: #" + tid + "#"
+		return False
+
+	def TRFCCommit(self, srfc, tid):
+		print "TID (TRFCCommit) is: #" + tid + "#"
+		return
+
+	def TRFCConfirm(self, srfc, tid):
+		print "TID (TRFCConfirm) is: #" + tid + "#"
+		return
+
+	def TRFCRollback(self, srfc, tid):
+		print "TID (TRFCRollback) is: #" + tid + "#"
+		return
+
+if __name__ == "__main__":
+	import saprfc
+
+	cb = reg()
+
+	conn = saprfc.conn(gwhost='seahorse.local.net', gwserv='3300', tpname='wibble.rfcexec', trfc=cb)
+
+	ifc = saprfc.iface("RFC_REMOTE_PIPE", callback=cb)
+	ifc.addParm( saprfc.parm("COMMAND", "", saprfc.RFCIMPORT, saprfc.RFCTYPE_CHAR, 256))
+	ifc.addParm( saprfc.parm("READ", "", saprfc.RFCIMPORT, saprfc.RFCTYPE_CHAR, 1))
+	ifc.addParm( saprfc.tab("PIPEDATA", "", 80))
+
+	conn.iface(ifc)
+
+	conn.accept(callback=cb, wait=5)
+	print "All finished (trfc_reg.py) \n"
+</pre></dl>
+
+<P>
+
+<p><hr>
+
+<!--Table of Child-Links-->
+<A NAME="CHILD_LINKS"><STRONG>Subsections</STRONG></A>
+
+<UL CLASS="ChildLinks">
+<LI><A NAME="tex2html106"
+  href="classconn.html">4.1 class <tt class="class">conn</tt> </A>
+<UL>
+<LI><A NAME="tex2html107"
+  href="connattrs.html">4.1.1 Attributes </A>
+<LI><A NAME="tex2html108"
+  href="connmeths.html">4.1.2 Methods </A>
+</UL>
+<BR>
+<LI><A NAME="tex2html109"
+  href="classiface.html">4.2 class <tt class="class">iface</tt> </A>
+<UL>
+<LI><A NAME="tex2html110"
+  href="ifaceattrs.html">4.2.1 Attributes </A>
+<LI><A NAME="tex2html111"
+  href="ifacemeths.html">4.2.2 Methods </A>
+</UL>
+<BR>
+<LI><A NAME="tex2html112"
+  href="classparm.html">4.3 class <tt class="class">parm</tt> </A>
+<UL>
+<LI><A NAME="tex2html113"
+  href="parmattrs.html">4.3.1 Attributes </A>
+<LI><A NAME="tex2html114"
+  href="parmmeths.html">4.3.2 Methods </A>
+</UL>
+<BR>
+<LI><A NAME="tex2html115"
+  href="classtab.html">4.4 class <tt class="class">tab</tt> </A>
+<UL>
+<LI><A NAME="tex2html116"
+  href="tabattrs.html">4.4.1 Attributes </A>
+<LI><A NAME="tex2html117"
+  href="tabmeths.html">4.4.2 Methods </A>
+</UL>
+<BR>
+<LI><A NAME="tex2html118"
+  href="classstruct.html">4.5 class <tt class="class">struct</tt> </A>
+<UL>
+<LI><A NAME="tex2html119"
+  href="structattrs.html">4.5.1 Attributes </A>
+<LI><A NAME="tex2html120"
+  href="structmeths.html">4.5.2 Methods </A>
+</UL>
+<BR>
+<LI><A NAME="tex2html121"
+  href="classfield.html">4.6 class <tt class="class">field</tt> </A>
+<UL>
+<LI><A NAME="tex2html122"
+  href="fieldattrs.html">4.6.1 Attributes </A>
+<LI><A NAME="tex2html123"
+  href="fieldmeths.html">4.6.2 Methods </A>
+</UL></UL>
+<!--End of Table of Child-Links-->
+
+<DIV CLASS="navigation">
+<p><hr>
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><A href="building-unix.html"><img src="previous.gif"
+border="0" height="32"
+  alt="Previous Page" width="32"></A></td>
+<td><A HREF="saprfc.html"><img src="up.gif"
+border="0" height="32"
+  alt="Up One Level" width="32"></A></td>
+<td><A href="classconn.html"><img src="next.gif"
+border="0" height="32"
+  alt="Next Page" width="32"></A></td>
+<td align="center" width="100%">Python saprfc Manual</td>
+<td><A href="contents.html"><img src="contents.gif"
+border="0" height="32"
+  alt="Contents" width="32"></A></td>
+<td><img src="blank.gif"
+  border="0" height="32"
+  alt="" width="32"></td>
+<td><img src="blank.gif"
+  border="0" height="32"
+  alt="" width="32"></td>
+</tr></table>
+<b class="navlabel">Previous:</b> <a class="sectref" href="building-unix.html">3.1 Building the Module</A>
+<b class="navlabel">Up:</b> <a class="sectref" HREF="saprfc.html">Python saprfc Manual</A>
+<b class="navlabel">Next:</b> <a class="sectref" href="classconn.html">4.1 class conn</A>
+<hr>
+<span class="release-info">Release 0.5.0.</span>
+</DIV>
+<!--End of Navigation Panel-->
+
+</BODY>
+</HTML>

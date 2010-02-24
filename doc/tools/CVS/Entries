@@ -1,0 +1,35 @@
+D/paper-a4////
+D/perl////
+D/sgmlconv////
+D/templates////
+D/texinputs////
+/anno-api.py/1.1/Thu Mar 13 14:55:32 2003//
+/buildindex.py/1.1/Thu Mar 13 14:55:32 2003//
+/checkargs.pm/1.1/Thu Mar 13 14:47:58 2003//
+/cklatex/1.1/Thu Mar 13 14:47:58 2003//
+/custlib.py/1.1/Thu Mar 13 14:47:58 2003//
+/cvsinfo.py/1.1/Thu Mar 13 14:47:58 2003//
+/findacks/1.1/Thu Mar 13 14:55:32 2003//
+/findmodrefs/1.1/Thu Mar 13 14:47:58 2003//
+/fix_hack/1.1/Thu Mar 13 14:47:58 2003//
+/fix_libaux.sed/1.1/Thu Mar 13 14:47:58 2003//
+/fixinfo.el/1.1/Thu Mar 13 14:47:58 2003//
+/indfix.py/1.1/Thu Mar 13 14:55:32 2003//
+/keywords.py/1.1/Thu Mar 13 14:47:58 2003//
+/mkackshtml/1.1/Thu Mar 13 14:47:58 2003//
+/mkhowto/1.1/Thu Mar 13 14:47:58 2003//
+/mkinfo/1.1/Thu Mar 13 14:47:58 2003//
+/mkmodindex/1.1/Thu Mar 13 14:47:58 2003//
+/mksourcepkg/1.1/Thu Mar 13 14:47:58 2003//
+/push-docs.sh/1.1/Thu Mar 13 14:47:58 2003//
+/refcounts.py/1.1/Thu Mar 13 14:55:32 2003//
+/support.py/1.1/Thu Mar 13 14:55:32 2003//
+/toc2bkm.py/1.1/Thu Mar 13 14:47:58 2003//
+/update-docs.sh/1.1/Thu Mar 13 14:47:58 2003//
+/whichlibs/1.1/Thu Mar 13 14:47:58 2003//
+D/info////
+D/html////
+/getpagecounts/1.1/Thu Mar 13 15:01:14 2003//
+/html2texi.pl/1.1/Thu Mar 13 14:47:58 2003//
+/listmodules/1.1/Thu Mar 13 15:01:14 2003//
+/node2label.pl/1.1/Thu Mar 13 14:47:58 2003//

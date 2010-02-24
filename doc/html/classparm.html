@@ -1,0 +1,116 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+<title>4.3 class parm </title>
+<META NAME="description" CONTENT="4.3 class parm ">
+<META NAME="keywords" CONTENT="saprfc">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+<link rel="STYLESHEET" href="saprfc.css">
+<LINK REL="next" href="classtab.html">
+<LINK REL="previous" href="classiface.html">
+<LINK REL="up" href="module-saprfc.html">
+<LINK REL="next" href="parmattrs.html">
+</head>
+<body>
+<DIV CLASS="navigation">
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><A href="ifacemeths.html"><img src="previous.gif"
+border="0" height="32"
+  alt="Previous Page" width="32"></A></td>
+<td><A href="module-saprfc.html"><img src="up.gif"
+border="0" height="32"
+  alt="Up One Level" width="32"></A></td>
+<td><A href="parmattrs.html"><img src="next.gif"
+border="0" height="32"
+  alt="Next Page" width="32"></A></td>
+<td align="center" width="100%">Python saprfc Manual</td>
+<td><A href="contents.html"><img src="contents.gif"
+border="0" height="32"
+  alt="Contents" width="32"></A></td>
+<td><img src="blank.gif"
+  border="0" height="32"
+  alt="" width="32"></td>
+<td><img src="blank.gif"
+  border="0" height="32"
+  alt="" width="32"></td>
+</tr></table>
+<b class="navlabel">Previous:</b> <a class="sectref" href="ifacemeths.html">4.2.2 Methods</A>
+<b class="navlabel">Up:</b> <a class="sectref" href="module-saprfc.html">4 module saprfc</A>
+<b class="navlabel">Next:</b> <a class="sectref" href="parmattrs.html">4.3.1 Attributes</A>
+<br><hr>
+</DIV>
+<!--End of Navigation Panel-->
+<H2><A NAME="SECTION000530000000000000000">&nbsp;</A>
+<BR>
+4.3 class <tt class="class">parm</tt> 
+</H2>
+
+<P>
+<tt class="class">parm</tt> - Python extension for parsing and creating an SAP parameter to be added to an RFC Interface.
+
+<P>
+Generally you would not create one of these manually as it is far easier to use the "discovery" functionality of the <code><tt class="class">conn</tt>.discover("RFCNAME")</code> method.  This returns a fully formed interface object.  This is achieved by using standard RFCs supplied by SAP to look up the definition of an RFC interface and any associated structures.
+
+<P>
+<dl><dd><pre class="verbatim">
+	import saprfc
+	eparam = parm(name, structure, RFCEXPORT, datatype, intlen, decs, default, default)
+</pre></dl>
+
+<P>
+<dl><dt><b><a name='l2h-30'><tt class='function'>parm</tt></a></b>(<var>name="a name", structure="structure if complex", RFCEXPORT | RFCIMPORT, datatype="SAP datatype", intlen="internal parameter length", decs="decimal places", value="value", default="default value for reset"</var>)
+<dd>
+creates a new RFC Interface Parameter object.  This is either an import or export parameter (Export for parameters going into a call, Import for parameter values as a result of a call).
+</dl>
+
+<P>
+
+<p><hr>
+
+<!--Table of Child-Links-->
+<A NAME="CHILD_LINKS"><STRONG>Subsections</STRONG></A>
+
+<UL CLASS="ChildLinks">
+<LI><A NAME="tex2html201"
+  href="parmattrs.html">4.3.1 Attributes </A>
+<LI><A NAME="tex2html202"
+  href="parmmeths.html">4.3.2 Methods </A>
+</UL>
+<!--End of Table of Child-Links-->
+
+<DIV CLASS="navigation">
+<p><hr>
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><A href="ifacemeths.html"><img src="previous.gif"
+border="0" height="32"
+  alt="Previous Page" width="32"></A></td>
+<td><A href="module-saprfc.html"><img src="up.gif"
+border="0" height="32"
+  alt="Up One Level" width="32"></A></td>
+<td><A href="parmattrs.html"><img src="next.gif"
+border="0" height="32"
+  alt="Next Page" width="32"></A></td>
+<td align="center" width="100%">Python saprfc Manual</td>
+<td><A href="contents.html"><img src="contents.gif"
+border="0" height="32"
+  alt="Contents" width="32"></A></td>
+<td><img src="blank.gif"
+  border="0" height="32"
+  alt="" width="32"></td>
+<td><img src="blank.gif"
+  border="0" height="32"
+  alt="" width="32"></td>
+</tr></table>
+<b class="navlabel">Previous:</b> <a class="sectref" href="ifacemeths.html">4.2.2 Methods</A>
+<b class="navlabel">Up:</b> <a class="sectref" href="module-saprfc.html">4 module saprfc</A>
+<b class="navlabel">Next:</b> <a class="sectref" href="parmattrs.html">4.3.1 Attributes</A>
+<hr>
+<span class="release-info">Release 0.5.0.</span>
+</DIV>
+<!--End of Navigation Panel-->
+
+</BODY>
+</HTML>

@@ -1,0 +1,22 @@
+Thu Apr 10 15:29:11 GMT 2007 (approximately...) Piers Harding <piers@ompka.net>
+*	The first version
+
+Wed Jun  6 10:36:48 BST 2007
+* fixed documentation, build, and basic.py as suggested by Christian Ziemski.
+
+Thu Jun 26 18:26:41 NZST 2008
+* remove nolonger available connection attributes 
+
+Thu Dec 11 09:52:59 NZDT 2008
+* make sure close cannot be called twice
+
+Wed Aug 26 07:17:51 NZST 2009
+* correct the build process to work with Win32
+* fix definition error that came up in win32
+   Thanks to all the help from Menelaos Maglis
+Thu Sep 10 06:14:01 NZST 2009
+* Fix problems with unicode CHAR fields  - receiving buffer too short - thanks Ulrich and Menelaos
+
+Tue Oct 13 04:34:14 NZDT 2009
+* added lcheck as suggested by christian.ziemski
+

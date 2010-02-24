@@ -1,0 +1,41 @@
+
+sapnwrfc - A Python interface to SAP NetWeaver R/3 systems using the RFC protocol
+---------------------------------------------------------------------------------
+
+Copyright (C) Piers Harding 2006 - 2009, All rights reserved
+
+== Summary
+
+Welcome to the sapnwrfc Python module.  This module is intended to facilitate RFC calls to an SAP R/3 system of release 4.6x and above.  It may work for earlier versions but it hasn't been tested.
+The fundamental purpose of the production of this package, is to provide a clean object oriented interface to RFC calls from within Python.  This will hopefully have a number of effects:
+(1) make it really easy to do RFC calls to SAP from Python in an object oriented fashion (Doh!)
+(2) promote Python as the interface/scripting/glue language of choice for interaction with SAP R/3.
+(3) make the combination of Linux, Apache, and Python the killer app for internet connectivity with SAP.
+(4) Establish a small fun open source project that people are more than welcome to contribute to, if they so wish.
+
+With this in mind - this package has been developed under Linux, so the installation is therefore focused on this.  This does not mean that it will not work on other UNIX like flavours - to the contrary it probably will, it just hasn't been tested.
+
+
+Prerequisites:
+Please insure that PyYAML is install.  This can be found at: http://pyyaml.org/wiki/PyYAML .
+
+Installation:
+See the file INSTALL for installation instructions.
+
+Bugs:
+I appreciate bug reports and patches, just mail me! piers@ompka.net
+
+sapnwrfc is Copyright (c) 2006 - 2009 Piers Harding.
+It is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 2 of the License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
+
+A copy of the GNU Lesser General Public License (version 2.1) is included in
+the file COPYING.
+

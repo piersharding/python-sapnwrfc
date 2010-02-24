@@ -1,0 +1,76 @@
+
+INSTALLATION INSTRUCTIONS FOR sapnwrfc
+------------------------------------------------------------------------------
+
+-- Prerequisites --
+
+Please insure that PyYAML is install.  This can be found at: http://pyyaml.org/wiki/PyYAML .
+
+
+-- Building the Module on a Unix System --
+
+sapnwrfc uses distutils, so there really shouldn't be any problems. To build
+the library:
+
+    python setup.py build
+
+If your sapnwrfc (nwrfcsdk) header files aren't in /usr/sap/nwrfcsdk/include, you may
+need to supply the -I flag to let the setup script know where to look. The same
+goes for the libraries of course, use the -L flag. Note that build won't accept
+these flags, so you have to run first build_ext and then build! Example:
+
+    python setup.py build_ext -I/usr/sap/nwrfcsdk/include -L/usr/sap/nwrfcsdk/lib
+    python setup.py build
+
+Then
+
+    python setup.py install
+
+If you, for some arcane reason, don't want the module to appear in the
+site-packages directory, use the --prefix option.
+
+You can, of course, do
+
+    python setup.py --help
+
+to find out more about how to use the script.
+
+You may have to sort out either ldconfig (Linux) or LD_LIBRARY_PATH to point to
+where ever your NW SAP RFC SDK lib directory is eg: /usr/sap/nwrfcsdk/lib.
+
+
+Special Instructions for Windows
+---------------------------------
+
+The same python setup.py process needs to be followed for windows, but there are some additional issues when it comes 
+to the library being imported.  These problems seem to revolve around Windows resolving where the NW RFC SDK libraries
+live.
+Menelaos Maglis gave me extensive help in debugging this, and came to the following conclussion
+" The only extra thing needed was to add the sap nwrfcsdk lib path to
+windows system PATH environment variable. "
+
+This was tested for ActivePython 2.6.2.2 (ActiveState Software Inc.) based on Python 2.6.2 (r262:71600, Apr 21 2009, 15:05:37) [MSC v.1500 32 bit (Intel)] on win32.
+Also using PyYAML-3.08.win32-py2.6.exe.
+
+
+
+-- Documentation --
+
+The documentation is written in LaTeX, using the standard Python templates,
+and tools to compile it into a number of forms are included.  You need to
+supply things like dvips, latex2html yourself of course!
+
+To build the text, html, postscript or dvi forms of the documentation, this is
+what you do:
+
+    cd doc
+    # To make the text-only documentation:
+    make text
+    # To make the dvi form:
+    make dvi
+
+It's as simple as that.  Note that since Python's mkhowto script is used, if
+you do first ``make dvi'' and then ``make ps'', the dvi file will disappear.
+I included a special build target ``make all'' that will build all the
+documentation in an order that won't let anything disappear.
+

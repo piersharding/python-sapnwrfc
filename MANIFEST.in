@@ -1,0 +1,17 @@
+recursive-include       src
+include     COPYING ChangeLog INSTALL README TODO MANIFEST.in
+#include     doc/sapnwrfc.tex doc/Makefile
+#recursive-include   doc/html    *
+#recursive-include   doc/tools   *
+recursive-include   examples    *
+recursive-include   sapnwrfc    *
+recursive-include   tools    *
+recursive-include   src    *
+global-exclude  .cvsignore
+global-exclude  *.pyc
+global-exclude  *~
+global-exclude  *.trc
+global-exclude  CPIC*
+src/nwsaprfcutil.c
+setup.cfg
+setup.py

@@ -1,0 +1,156 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+<title>4.2.1 Attributes </title>
+<META NAME="description" CONTENT="4.2.1 Attributes ">
+<META NAME="keywords" CONTENT="saprfc">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+<link rel="STYLESHEET" href="saprfc.css">
+<LINK REL="next" href="ifacemeths.html">
+<LINK REL="previous" href="classiface.html">
+<LINK REL="up" href="classiface.html">
+<LINK REL="next" href="ifacemeths.html">
+</head>
+<body>
+<DIV CLASS="navigation">
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><A href="classiface.html"><img src="previous.gif"
+border="0" height="32"
+  alt="Previous Page" width="32"></A></td>
+<td><A href="classiface.html"><img src="up.gif"
+border="0" height="32"
+  alt="Up One Level" width="32"></A></td>
+<td><A href="ifacemeths.html"><img src="next.gif"
+border="0" height="32"
+  alt="Next Page" width="32"></A></td>
+<td align="center" width="100%">Python saprfc Manual</td>
+<td><A href="contents.html"><img src="contents.gif"
+border="0" height="32"
+  alt="Contents" width="32"></A></td>
+<td><img src="blank.gif"
+  border="0" height="32"
+  alt="" width="32"></td>
+<td><img src="blank.gif"
+  border="0" height="32"
+  alt="" width="32"></td>
+</tr></table>
+<b class="navlabel">Previous:</b> <a class="sectref" href="classiface.html">4.2 class iface</A>
+<b class="navlabel">Up:</b> <a class="sectref" href="classiface.html">4.2 class iface</A>
+<b class="navlabel">Next:</b> <a class="sectref" href="ifacemeths.html">4.2.2 Methods</A>
+<br><hr>
+</DIV>
+<!--End of Navigation Panel-->
+
+<H3><A NAME="SECTION000521000000000000000">&nbsp;</A>
+<BR>
+4.2.1 Attributes 
+</H3>
+
+<P>
+<dl><dt><b><a name='l2h-23'><tt class='member'>name</tt></a></b>
+<dd>
+    Name of the interface
+</dl>
+
+<P>
+<dl><dt><b><a name='l2h-24'><tt class='member'>parms</tt></a></b>
+<dd>
+    Array of interface parameter objects
+</dl>
+
+<P>
+<dl><dt><b><a name='l2h-25'><tt class='member'>callback</tt></a></b>
+<dd>
+    a reference to an object instance that has the necessary callback handlers for controling a registered RFC:
+
+<P>
+<dl><dd><pre class="verbatim">
+class reg:
+
+	def __init__(self):
+		self.cnt = 0
+		import os
+
+....
+
+	def handler(self, iface, srfc):
+		data = []
+		print "COMMAND is: #" + iface.COMMAND.getValue() + "#"
+		out = os.popen(iface.COMMAND.getValue(), "r")
+		for row in out:
+			data.append(row)
+		out.close()
+		iface.PIPEDATA.setValue( data )
+		return 1
+</pre></dl>
+   The handler method gets passed the original instance of the saprfc.iface object, and the saprfc.conn object.
+   The saprfc.conn object has a member sapinfo which returns a dictionary of the current connection details (updated for each registered RFC call).
+
+<P>
+In tRFC (transaction RFC), the handler gets passed an additional parameter - the Transaction ID (TID), like so:
+
+<P>
+<dl><dd><pre class="verbatim">
+class reg:
+
+	def __init__(self):
+		self.cnt = 0
+		import os
+
+....
+
+	def handler(self, iface, srfc, tid):
+		data = []
+		print "TID (reg.handler) is: #" + tid + "#"
+		print "COMMAND is: #" + iface.COMMAND.getValue() + "#"
+		out = os.popen(iface.COMMAND.getValue(), "r")
+		for row in out:
+			data.append(row)
+		out.close()
+		iface.PIPEDATA.setValue( data )
+		return 1
+
+....
+</pre></dl>
+
+<P>
+</dl>
+
+<P>
+
+<DIV CLASS="navigation">
+<p><hr>
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><A href="classiface.html"><img src="previous.gif"
+border="0" height="32"
+  alt="Previous Page" width="32"></A></td>
+<td><A href="classiface.html"><img src="up.gif"
+border="0" height="32"
+  alt="Up One Level" width="32"></A></td>
+<td><A href="ifacemeths.html"><img src="next.gif"
+border="0" height="32"
+  alt="Next Page" width="32"></A></td>
+<td align="center" width="100%">Python saprfc Manual</td>
+<td><A href="contents.html"><img src="contents.gif"
+border="0" height="32"
+  alt="Contents" width="32"></A></td>
+<td><img src="blank.gif"
+  border="0" height="32"
+  alt="" width="32"></td>
+<td><img src="blank.gif"
+  border="0" height="32"
+  alt="" width="32"></td>
+</tr></table>
+<b class="navlabel">Previous:</b> <a class="sectref" href="classiface.html">4.2 class iface</A>
+<b class="navlabel">Up:</b> <a class="sectref" href="classiface.html">4.2 class iface</A>
+<b class="navlabel">Next:</b> <a class="sectref" href="ifacemeths.html">4.2.2 Methods</A>
+<hr>
+<span class="release-info">Release 0.5.0.</span>
+</DIV>
+<!--End of Navigation Panel-->
+
+</BODY>
+</HTML>

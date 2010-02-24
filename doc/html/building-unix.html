@@ -1,0 +1,128 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+<title>3.1 Building the Module on a Unix System </title>
+<META NAME="description" CONTENT="3.1 Building the Module on a Unix System ">
+<META NAME="keywords" CONTENT="saprfc">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+<link rel="STYLESHEET" href="saprfc.css">
+<LINK REL="previous" href="building.html">
+<LINK REL="up" href="building.html">
+<LINK REL="next" href="module-saprfc.html">
+</head>
+<body>
+<DIV CLASS="navigation">
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><A href="building.html"><img src="previous.gif"
+border="0" height="32"
+  alt="Previous Page" width="32"></A></td>
+<td><A href="building.html"><img src="up.gif"
+border="0" height="32"
+  alt="Up One Level" width="32"></A></td>
+<td><A href="module-saprfc.html"><img src="next.gif"
+border="0" height="32"
+  alt="Next Page" width="32"></A></td>
+<td align="center" width="100%">Python saprfc Manual</td>
+<td><A href="contents.html"><img src="contents.gif"
+border="0" height="32"
+  alt="Contents" width="32"></A></td>
+<td><img src="blank.gif"
+  border="0" height="32"
+  alt="" width="32"></td>
+<td><img src="blank.gif"
+  border="0" height="32"
+  alt="" width="32"></td>
+</tr></table>
+<b class="navlabel">Previous:</b> <a class="sectref" href="building.html">3 Building and Installing</A>
+<b class="navlabel">Up:</b> <a class="sectref" href="building.html">3 Building and Installing</A>
+<b class="navlabel">Next:</b> <a class="sectref" href="module-saprfc.html">4 module saprfc</A>
+<br><hr>
+</DIV>
+<!--End of Navigation Panel-->
+
+<H2><A NAME="SECTION000410000000000000000">&nbsp;</A>
+<BR>
+3.1 Building the Module on a Unix System 
+</H2>
+
+<P>
+saprfc requires python 2.3 or better.  This is because of the use of generators and 
+the <code>yield</code>, and for the use of properties handled by set/get methods.
+
+<P>
+saprfc uses distutils, so there really shouldn't be any problems. To build
+the library:
+<dl><dd><pre class="verbatim">
+python setup.py build
+</pre></dl>
+
+<P>
+If your librfc or librfccm (rfcsdk) header files aren't in <code>/usr/sap/rfcsdk/include</code>, you 
+may need to supply the <code>-I</code> flag to let the setup script know where to look. 
+The same goes for the libraries of course, use the <code>-L</code> flag. Note that
+<code>build</code> won't accept these flags, so you have to run first
+<code>build_ext</code> and then <code>build</code>! Example:
+<dl><dd><pre class="verbatim">
+python setup.py build_ext -I/usr/sap/rfcsdk/include -L/usr/sap/rfcsdk/lib
+python setup.py build
+</pre></dl>
+
+<P>
+Then:
+
+<P>
+<dl><dd><pre class="verbatim">
+python setup.py install
+</pre></dl>
+
+<P>
+If you, for some arcane reason, don't want the module to appear in the
+<code>site-packages</code> directory, use the <code>--prefix</code> option.
+
+<P>
+You can, of course, do
+<dl><dd><pre class="verbatim">
+python setup.py --help
+</pre></dl>
+
+<P>
+to find out more about how to use the script.
+
+<P>
+
+<DIV CLASS="navigation">
+<p><hr>
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><A href="building.html"><img src="previous.gif"
+border="0" height="32"
+  alt="Previous Page" width="32"></A></td>
+<td><A href="building.html"><img src="up.gif"
+border="0" height="32"
+  alt="Up One Level" width="32"></A></td>
+<td><A href="module-saprfc.html"><img src="next.gif"
+border="0" height="32"
+  alt="Next Page" width="32"></A></td>
+<td align="center" width="100%">Python saprfc Manual</td>
+<td><A href="contents.html"><img src="contents.gif"
+border="0" height="32"
+  alt="Contents" width="32"></A></td>
+<td><img src="blank.gif"
+  border="0" height="32"
+  alt="" width="32"></td>
+<td><img src="blank.gif"
+  border="0" height="32"
+  alt="" width="32"></td>
+</tr></table>
+<b class="navlabel">Previous:</b> <a class="sectref" href="building.html">3 Building and Installing</A>
+<b class="navlabel">Up:</b> <a class="sectref" href="building.html">3 Building and Installing</A>
+<b class="navlabel">Next:</b> <a class="sectref" href="module-saprfc.html">4 module saprfc</A>
+<hr>
+<span class="release-info">Release 0.5.0.</span>
+</DIV>
+<!--End of Navigation Panel-->
+
+</BODY>
+</HTML>

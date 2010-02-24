@@ -1,0 +1,126 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+<title>4.1 class conn </title>
+<META NAME="description" CONTENT="4.1 class conn ">
+<META NAME="keywords" CONTENT="saprfc">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+<link rel="STYLESHEET" href="saprfc.css">
+<LINK REL="next" href="classiface.html">
+<LINK REL="previous" href="module-saprfc.html">
+<LINK REL="up" href="module-saprfc.html">
+<LINK REL="next" href="connattrs.html">
+</head>
+<body>
+<DIV CLASS="navigation">
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><A href="module-saprfc.html"><img src="previous.gif"
+border="0" height="32"
+  alt="Previous Page" width="32"></A></td>
+<td><A href="module-saprfc.html"><img src="up.gif"
+border="0" height="32"
+  alt="Up One Level" width="32"></A></td>
+<td><A href="connattrs.html"><img src="next.gif"
+border="0" height="32"
+  alt="Next Page" width="32"></A></td>
+<td align="center" width="100%">Python saprfc Manual</td>
+<td><A href="contents.html"><img src="contents.gif"
+border="0" height="32"
+  alt="Contents" width="32"></A></td>
+<td><img src="blank.gif"
+  border="0" height="32"
+  alt="" width="32"></td>
+<td><img src="blank.gif"
+  border="0" height="32"
+  alt="" width="32"></td>
+</tr></table>
+<b class="navlabel">Previous:</b> <a class="sectref" href="module-saprfc.html">4 module saprfc</A>
+<b class="navlabel">Up:</b> <a class="sectref" href="module-saprfc.html">4 module saprfc</A>
+<b class="navlabel">Next:</b> <a class="sectref" href="connattrs.html">4.1.1 Attributes</A>
+<br><hr>
+</DIV>
+<!--End of Navigation Panel-->
+<H2><A NAME="SECTION000510000000000000000">&nbsp;</A>
+<BR>
+4.1 class <tt class="class">conn</tt> 
+</H2>
+
+<P>
+The <tt class="class">conn</tt> Class works in concert with several other Classes that
+also come with same distribution, these are <tt class="class">iface</tt>, <tt class="class">parm</tt>,
+<tt class="class">tab</tt>, and <tt class="class">struct</tt>.  These come
+together to give you an object oriented programming interface for
+performing RFC function calls to SAP from a UNIX based platform with
+your favourite programming language - Python.
+A <tt class="class">conn</tt> object holds together one ( and only one ) connection to an
+SAP system at a time.  The <tt class="class">conn</tt> object can use one or many <tt class="class">iface</tt>
+objects, each of which equate to the definition of an RFC Function in
+SAP ( see trans SE37 ). Each <tt class="class">iface</tt> object holds one or many
+<tt class="class">parm</tt>, and/or <tt class="class">tab</tt> objects, corresponding to
+the RFC Interface definition in SAP ( SE37 ).
+For all <tt class="class">tab</tt> objects, and for complex <tt class="class">parm</tt> objects,
+a <tt class="class">struct</tt> object can be defined.  This equates to a
+structure definition in the data dictionary ( see trans SE11 ).
+Because the manual definition of interfaces and structures is a boring
+and tiresome exercise, there are specific methods provided to 
+automatically discover, and add the appropriate interface definitions
+for an RFC Function module to the <tt class="class">conn</tt> object ( see methods
+discover, and structure of <tt class="class">conn</tt> ).
+
+<P>
+<dl><dt><b><a name='l2h-2'><tt class='function'>conn</tt></a></b>(<big>[</big><var>ashost="localhost", sysnr=18, lang="EN", client=000, user="DEVELOPER", passwd="19920706", trace=1</var><big>]</big>)
+<dd>
+creates a new RFC connection object.
+</dl>
+
+<P>
+
+<p><hr>
+
+<!--Table of Child-Links-->
+<A NAME="CHILD_LINKS"><STRONG>Subsections</STRONG></A>
+
+<UL CLASS="ChildLinks">
+<LI><A NAME="tex2html135"
+  href="connattrs.html">4.1.1 Attributes </A>
+<LI><A NAME="tex2html136"
+  href="connmeths.html">4.1.2 Methods </A>
+</UL>
+<!--End of Table of Child-Links-->
+
+<DIV CLASS="navigation">
+<p><hr>
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><A href="module-saprfc.html"><img src="previous.gif"
+border="0" height="32"
+  alt="Previous Page" width="32"></A></td>
+<td><A href="module-saprfc.html"><img src="up.gif"
+border="0" height="32"
+  alt="Up One Level" width="32"></A></td>
+<td><A href="connattrs.html"><img src="next.gif"
+border="0" height="32"
+  alt="Next Page" width="32"></A></td>
+<td align="center" width="100%">Python saprfc Manual</td>
+<td><A href="contents.html"><img src="contents.gif"
+border="0" height="32"
+  alt="Contents" width="32"></A></td>
+<td><img src="blank.gif"
+  border="0" height="32"
+  alt="" width="32"></td>
+<td><img src="blank.gif"
+  border="0" height="32"
+  alt="" width="32"></td>
+</tr></table>
+<b class="navlabel">Previous:</b> <a class="sectref" href="module-saprfc.html">4 module saprfc</A>
+<b class="navlabel">Up:</b> <a class="sectref" href="module-saprfc.html">4 module saprfc</A>
+<b class="navlabel">Next:</b> <a class="sectref" href="connattrs.html">4.1.1 Attributes</A>
+<hr>
+<span class="release-info">Release 0.5.0.</span>
+</DIV>
+<!--End of Navigation Panel-->
+
+</BODY>
+</HTML>

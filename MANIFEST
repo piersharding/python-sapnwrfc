@@ -1,0 +1,16 @@
+COPYING
+ChangeLog
+INSTALL
+MANIFEST.in
+README
+setup.py
+examples/basic.py
+examples/conn_test.py
+examples/greek_test.py
+examples/sap.yml
+examples/sapnwrfc_test.py
+sapnwrfc/__init__.py
+sapnwrfc/rfc/__init__.py
+src/nwsaprfcutil.c
+src/nwsaprfcutil.c.save
+tools/u16lit.pl
