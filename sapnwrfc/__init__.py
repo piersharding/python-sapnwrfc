@@ -150,7 +150,7 @@ class FunctionCall:
       self.handle.parameters[k] = cpy
 
   def __repr__(self):
-    print "Hello REPR!\n"
+    return "<FunctionCall %s instance at 0x%x>" % (self.name, id(self))
 
   def __getattr__(self, *args, **kwdargs):
     if self.handle.parameters.has_key(args[0]):
