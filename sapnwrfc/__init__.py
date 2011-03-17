@@ -20,8 +20,6 @@ import re
 from types import *
 #from copy import deepcopy
 
-import yaml
-
 
 
 # Parameter types
@@ -55,6 +53,9 @@ class base(object):
   
   @classmethod
   def load_config(cls):
+    # REFACTOR: there is no need to depend on yaml
+    import yaml
+
     cls.configuration = yaml.load(file(cls.config_location, 'rb').read())
     return cls.configuration
   
