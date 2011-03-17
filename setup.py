@@ -178,8 +178,8 @@ elif re.compile("^linux").match(sys.platform):
     macros = [('_LARGEFILE_SOURCE', None), ('SAPwithUNICODE', None), ('SAPonUNIX', None), ('__NO_MATH_INLINES', None), ('SAPwithTHREADS', None)]
     compile_args = ['-mno-3dnow', '-fno-strict-aliasing', '-pipe', '-fexceptions', '-funsigned-char', '-Wall', '-Wno-uninitialized', '-Wno-long-long', '-Wcast-align', '-fPIC']
 else:
-    print "I dont know what to do with your platfor: ", system.platform, "\n"
-    print "You MUST edit the setup.py to create a vriant for your environment.\n"
+    print "I don't know what to do with your platform: ", system.platform, "\n"
+    print "You MUST edit the setup.py to create a variant for your environment.\n"
     sys.exit(1)
 
 nwsaprfcutil_ext = Extension('nwsaprfcutil',
