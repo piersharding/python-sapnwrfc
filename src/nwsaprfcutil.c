@@ -2045,7 +2045,8 @@ static PyObject * sapnwrfc_invoke(sapnwrfc_FuncCallObject* self){
 			   break;
 		 }
 		 if (PyErr_Occurred() != NULL){
-		   fprintf(stderr, "Ooops!\n");
+		   /* TODO: How to do logging from extension modules?
+		    * fprintf(stderr, "Ooops!\n"); */
        return NULL;
 		 }
   }
