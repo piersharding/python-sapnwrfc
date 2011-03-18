@@ -260,7 +260,7 @@ Lesser General Public License for more details.
 A copy of the GNU Lesser General Public License (version 2.1) 
 can be found at http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html
 """
-setup(name = "sapnwrfc", version = "0.10",license = "GLPL v2.1",
+setup(name = "sapnwrfc", version = "0.11",license = "GLPL v2.1",
       description="SAP NetWeaver R/3 RFC Connector for Python",
       long_description=LONG_DESCRIPTION,
       author="Piers Harding",
