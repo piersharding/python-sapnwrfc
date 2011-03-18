@@ -7,7 +7,7 @@ python setup.py clean
 python setup.py sdist
 cd dist
 chmod -R a+r *z
-rsync -av --delete *z ompka.net:www/download/python/sapnwrfc/
+rsync -av --delete *z piersharding.com:www/download/python/sapnwrfc/
 
 
 cd $BASE
@@ -20,4 +20,4 @@ cd $BASE/tmp/doc
 rm -rf tools *.log *.tex Makefile *.how *.ind *.l2h *~
 find . -type d -name CVS -exec rm -rf {} \;
 cd $BASE/tmp
-rsync -av --delete doc ompka.net:www/download/python/sapnwrfc/
+rsync -av --delete doc piersharding.com:www/download/python/sapnwrfc/
