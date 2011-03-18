@@ -1,6 +1,6 @@
 #!/bin/sh
 
-BASE=/home/piers/code/python/sapnwrfc
+BASE=/home/piers/git/public/python-sapnwrfc
 
 cd $BASE
 python setup.py clean
