@@ -20,3 +20,8 @@ Thu Sep 10 06:14:01 NZST 2009
 Tue Oct 13 04:34:14 NZDT 2009
 * added lcheck as suggested by christian.ziemski
 
+Wed May 12 06:15:10 NZST 2010
+Added most of the possible login parameters
+
+Sat Mar 19 06:34:17 NZDT 2011
+Added fixes, typos, and silly debug comments + removed dependence on py yaml - thanks Johannes
