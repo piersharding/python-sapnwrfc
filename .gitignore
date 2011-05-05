@@ -1,0 +1,15 @@
+
+.installed.cfg
+.project
+.pydevproject
+.settings/
+bin/*
+build/
+dev_rfc.trc
+develop-eggs/
+nwsaprfcutil.so
+sapnwrfc.egg-info/
+
+*~
+*.bak
+*.pyc
