@@ -25,3 +25,6 @@ Added most of the possible login parameters
 
 Sat Mar 19 06:34:17 NZDT 2011
 Added fixes, typos, and silly debug comments + removed dependence on py yaml - thanks Johannes
+
+Fri Jul 15 06:16:44 NZST 2011
+Fix incorrect type coersion for error handling - thanks guettli (Thomas Güttler)
