@@ -12,7 +12,7 @@ log = logging.getLogger(__name__)
 
 
 class ConnectionProblemTestCase(unittest.TestCase):
-    
+
     def setUp(self):
         logging.basicConfig(level=logging.DEBUG)
         
