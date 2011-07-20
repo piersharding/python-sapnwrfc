@@ -1424,7 +1424,7 @@ void set_char_value(DATA_CONTAINER_HANDLE hcont, SAP_UC *name, PyObject * value,
 	SAP_UC *p_value;
 
 	if (! PyString_Check(value)){
-       	SAPNW_rfc_call_error1("RfcSetChar invalid Input value type:", PyString_AsString(value));
+       	SAPNW_rfc_call_error1("RfcSetChar invalid Input value type:", PyString_AsString(PyObject_Repr(value)));
 		return;
 	}
 

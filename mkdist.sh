@@ -21,3 +21,6 @@ rm -rf tools *.log *.tex Makefile *.how *.ind *.l2h *~
 find . -type d -name CVS -exec rm -rf {} \;
 cd $BASE/tmp
 rsync -av --delete doc piersharding.com:www/download/python/sapnwrfc/
+
+cd $BASE
+rm -rf $BASE/tmp
