@@ -155,14 +155,22 @@ SAP_UC * u8to16(PyObject *str) {
 	RFC_ERROR_INFO errorInfo;
 	SAP_UC *sapuc;
 	unsigned sapucSize, resultLength;
+    PyObject *tmp;
 
-  sapucSize = PyString_Size(str) + 1;
+    if (PyUnicode_Check(str)) {
+      tmp = PyUnicode_AsUTF8String(str);
+    }
+    else {
+      tmp = str;
+    }
+
+  sapucSize = PyString_Size(tmp) + 1;
   sapuc = mallocU(sapucSize);
   memsetU(sapuc, 0, sapucSize);
 
 	resultLength = 0;
 
-  rc = RfcUTF8ToSAPUC((RFC_BYTE *)PyString_AsString(str), PyString_Size(str), sapuc, &sapucSize, &resultLength, &errorInfo);
+  rc = RfcUTF8ToSAPUC((RFC_BYTE *)PyString_AsString(tmp), PyString_Size(tmp), sapuc, &sapucSize, &resultLength, &errorInfo);
 	return sapuc;
 }
 
@@ -1423,7 +1431,7 @@ void set_char_value(DATA_CONTAINER_HANDLE hcont, SAP_UC *name, PyObject * value,
   RFC_ERROR_INFO errorInfo;
 	SAP_UC *p_value;
 
-	if (! PyString_Check(value)){
+	if (! PyString_Check(value) && !PyUnicode_Check(value)){
        	SAPNW_rfc_call_error1("RfcSetChar invalid Input value type:", PyString_AsString(PyObject_Repr(value)));
 		return;
 	}

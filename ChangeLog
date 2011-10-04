@@ -28,3 +28,6 @@ Added fixes, typos, and silly debug comments + removed dependence on py yaml - t
 
 Fri Jul 15 06:16:44 NZST 2011
 Fix incorrect type coersion for error handling - thanks guettli (Thomas Güttler)
+
+Wed Oct  5 05:33:43 NZDT 2011
+* fix unicode handling of strings - thanks guettli (Thomas Güttler)
