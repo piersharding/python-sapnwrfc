@@ -52,6 +52,9 @@ windows system PATH environment variable. "
 This was tested for ActivePython 2.6.2.2 (ActiveState Software Inc.) based on Python 2.6.2 (r262:71600, Apr 21 2009, 15:05:37) [MSC v.1500 32 bit (Intel)] on win32.
 Also using PyYAML-3.08.win32-py2.6.exe.
 
+This may help:
+http://d.logosworld.com/files/books/karoona/IDOC%20tRFC%20for%20python.html
+
 
 
 -- Documentation --
