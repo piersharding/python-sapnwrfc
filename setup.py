@@ -2,7 +2,7 @@
 
 import sys
 if sys.version < '2.3':
-    print "\n\n   You Must Have Python Version >= 2.3  To Install sapnwrfc \n\n"
+    print("\n\n   You Must Have Python Version >= 2.3  To Install sapnwrfc \n\n")
     sys.exit(1)
 
 
@@ -18,16 +18,15 @@ class my_build_ext(build_ext.build_ext):
     Customise the build process for Linux
     """
     def build_extensions(self):
-        print "In my own BUILD_EXTENSIONS...\n"
+        print("In my own BUILD_EXTENSIONS...\n")
         build_ext.build_ext.build_extensions(self)
 
     def build_extension(self, ext):
         sources = ext.sources
-        if sources is None or type(sources) not in (ListType, TupleType):
-            raise DistutilsSetupError, \
-                  ("in 'ext_modules' option (extension '%s'), " +
+        if sources is None or type(sources) not in (list, tuple):
+            raise DistutilsSetupError(("in 'ext_modules' option (extension '%s'), " +
                    "'sources' must be present and must be " +
-                   "a list of source filenames") % ext.name
+                   "a list of source filenames") % ext.name)
         sources = list(sources)
 
         fullname = self.get_ext_fullname(ext.name)
@@ -162,7 +161,7 @@ incdirs = []
 libdirs = []
 libs = []
 if sys.platform=='win32':
-    print "selecting win32 libraries...\n"
+    print("selecting win32 libraries...\n")
     incdirs = ['src/rfcsdk/include']
     libdirs = ['src/rfcsdk/lib']
     #libs = ['sapnwrfc', 'sapu16_mt', 'sapucum', 'icudecnumber', 'pthread', 'dl', 'm', 'rt']
@@ -178,8 +177,8 @@ elif re.compile("^linux").match(sys.platform):
     macros = [('_LARGEFILE_SOURCE', None), ('SAPwithUNICODE', None), ('SAPonUNIX', None), ('__NO_MATH_INLINES', None), ('SAPwithTHREADS', None)]
     compile_args = ['-mno-3dnow', '-fno-strict-aliasing', '-pipe', '-fexceptions', '-funsigned-char', '-Wall', '-Wno-uninitialized', '-Wno-long-long', '-Wcast-align', '-fPIC']
 else:
-    print "I don't know what to do with your platform: ", system.platform, "\n"
-    print "You MUST edit the setup.py to create a variant for your environment.\n"
+    print("I don't know what to do with your platform: ", system.platform, "\n")
+    print("You MUST edit the setup.py to create a variant for your environment.\n")
     sys.exit(1)
 
 nwsaprfcutil_ext = Extension('nwsaprfcutil',
@@ -260,7 +259,7 @@ Lesser General Public License for more details.
 A copy of the GNU Lesser General Public License (version 2.1) 
 can be found at http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html
 """
-setup(name = "sapnwrfc", version = "0.16",license = "LGPL v2.1",
+setup(name = "sapnwrfc", version = "0.17",license = "LGPL v2.1",
       description="SAP NetWeaver R/3 RFC Connector for Python",
       long_description=LONG_DESCRIPTION,
       author="Piers Harding",

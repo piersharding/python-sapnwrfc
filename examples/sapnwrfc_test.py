@@ -12,7 +12,7 @@ class sapnwrfctest(unittest.TestCase):
 
 
   def testConn1(self):
-    print "testConn1"
+    print("testConn1")
     conn = sapnwrfc.base.rfc_connect({'user': 'developer', 'passwd': 'developer'})
     self.assertNotEquals(conn, None)
     #print "connection attributes: ", conn.connection_attributes()
@@ -21,7 +21,7 @@ class sapnwrfctest(unittest.TestCase):
     self.assertEquals(conn.close(), 1)
 
   def testConn2(self):
-    print "testConn2"
+    print("testConn2")
     conn = sapnwrfc.base.rfc_connect()
     self.assertNotEquals(conn, None)
     #print "connection attributes: ", conn.connection_attributes()
@@ -30,7 +30,7 @@ class sapnwrfctest(unittest.TestCase):
     self.assertEquals(conn.close(), 1)
 
   def testConn3(self):
-    print "testConn3"
+    print("testConn3")
     for i in range(25):
       #print "making a new connection (%d)." % i
       conn = sapnwrfc.base.rfc_connect()
@@ -40,7 +40,7 @@ class sapnwrfctest(unittest.TestCase):
       self.assertEquals(conn.close(), 1)
 
   def testFuncDesc1(self):
-    print "testFuncDesc1"
+    print("testFuncDesc1")
     for i in range(10):
       #print "making a new connection (%d)." % i
       conn = sapnwrfc.base.rfc_connect()
@@ -52,7 +52,7 @@ class sapnwrfctest(unittest.TestCase):
       self.assertEquals(conn.close(), 1)
 
   def testFuncDesc2(self):
-    print "testFuncDesc2"
+    print("testFuncDesc2")
     for i in range(10):
       #print "making a new connection (%d)." % i
       conn = sapnwrfc.base.rfc_connect()
@@ -66,7 +66,7 @@ class sapnwrfctest(unittest.TestCase):
       self.assertEquals(conn.close(), 1)
 
   def testFuncCall1(self):
-    print "testFuncCall1"
+    print("testFuncCall1")
     for i in range(10):
       #print "making a new connection (%d)." % i
       conn = sapnwrfc.base.rfc_connect()
@@ -85,7 +85,7 @@ class sapnwrfctest(unittest.TestCase):
       self.assertEquals(conn.close(), 1)
 
   def testFuncCall2(self):
-    print "testFuncCall2"
+    print("testFuncCall2")
     conn = sapnwrfc.base.rfc_connect()
     self.assertNotEquals(conn, None)
     for i in range(25):
@@ -102,7 +102,7 @@ class sapnwrfctest(unittest.TestCase):
     self.assertEquals(conn.close(), 1)
 
   def testFuncCall3(self):
-    print "testFuncCall3"
+    print("testFuncCall3")
     conn = sapnwrfc.base.rfc_connect()
     self.assertNotEquals(conn, None)
     fd = conn.discover("RFC_READ_TABLE")
@@ -119,7 +119,7 @@ class sapnwrfctest(unittest.TestCase):
     self.assertEquals(conn.close(), 1)
 
   def testFuncCall4(self):
-    print "testFuncCall4"
+    print("testFuncCall4")
     conn = sapnwrfc.base.rfc_connect()
     self.assertNotEquals(conn, None)
     fd = conn.discover("RPY_PROGRAM_READ")
@@ -137,7 +137,7 @@ class sapnwrfctest(unittest.TestCase):
     self.assertEquals(conn.close(), 1)
 
   def testData1(self):
-    print "testData1"
+    print("testData1")
     conn = sapnwrfc.base.rfc_connect()
     self.assertNotEquals(conn, None)
     fd = conn.discover("Z_TEST_DATA")
@@ -184,7 +184,7 @@ class sapnwrfctest(unittest.TestCase):
     self.assertEquals(conn.close(), 1)
 
   def testChanging1(self):
-    print "testChanging1"
+    print("testChanging1")
     conn = sapnwrfc.base.rfc_connect()
     self.assertNotEquals(conn, None)
     fd = conn.discover("STFC_CHANGING")
@@ -200,7 +200,7 @@ class sapnwrfctest(unittest.TestCase):
     self.assertEquals(conn.close(), 1)
 
   def testDeep1(self):
-    print "testDeep1"
+    print("testDeep1")
     conn = sapnwrfc.base.rfc_connect()
     self.assertNotEquals(conn, None)
     fds = conn.discover("STFC_DEEP_STRUCTURE")
@@ -232,7 +232,7 @@ class sapnwrfctest(unittest.TestCase):
     self.assertEquals(conn.close(), 1)
 
   def testDeep2(self):
-    print "testDeep2"
+    print("testDeep2")
     conn = sapnwrfc.base.rfc_connect()
     self.assertNotEquals(conn, None)
     fds = conn.discover("STFC_DEEP_STRUCTURE")
@@ -280,7 +280,7 @@ class sapnwrfctest(unittest.TestCase):
 if __name__ == "__main__":
   import sys
   if sys.version < '2.2':
-    print "\n\n   You Must Have Python Version >= 2.2  To run saprfc \n\n"
+    print("\n\n   You Must Have Python Version >= 2.2  To run saprfc \n\n")
     sys.exit(1)
   import os
   path = ""
@@ -289,8 +289,8 @@ if __name__ == "__main__":
   elif os.listdir(os.path.join(os.getcwd(), '../')):
     path = os.path.join(os.getcwd(), '../build')
   else:
-    print "cant find ./build directory to load the saprfc module, try runnig from the package root dir"
-    print "   looked in:", os.getcwd(), " and ", os.path.join(os.getcwd(), '../')
+    print("cant find ./build directory to load the saprfc module, try runnig from the package root dir")
+    print("   looked in:", os.getcwd(), " and ", os.path.join(os.getcwd(), '../'))
     sys.exit(1)
 
   libdir = ""
@@ -298,13 +298,13 @@ if __name__ == "__main__":
     if i.startswith("lib"):
       libdir = os.path.join(path, i)
   if libdir == "":
-    print "cant find ./build directory to load the saprfc module, try runnig from the package root dir"
-    print "   looked in:", os.getcwd(), " and ", os.path.join(os.getcwd(), '../')
+    print("cant find ./build directory to load the saprfc module, try runnig from the package root dir")
+    print("   looked in:", os.getcwd(), " and ", os.path.join(os.getcwd(), '../'))
     sys.exit(1)
 
   sys.path.append(libdir)
 
-  print "using library path: " + libdir
+  print("using library path: " + libdir)
 
   import sapnwrfc
 

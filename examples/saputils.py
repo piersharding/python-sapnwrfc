@@ -45,7 +45,7 @@ def print_rfc_interface(method_name, conn=None):
     if conn is None:
         conn = sapnwrfc.base.rfc_connect(cfg=SAP_CONNECTION)
     iface = conn.discover(method_name)
-    print iface.name
+    print(iface.name)
     for key, var_dict in sorted(iface.handle.parameters.items()):
         #Example: {'direction': 1, 'name': 'ARCHIV_DOC_ID', 'type': 0, 'len': 40, 'decimals': 0, 'ulen': 80}
         value=dict(var_dict)
@@ -55,7 +55,7 @@ def print_rfc_interface(method_name, conn=None):
         direction=dirs.get(direction, direction)
         sap_type=value.pop('type')
         sap_type=sap_types.get(sap_type, sap_type)
-        print key, 'direction=%s type=%s len=%s decimals=%s ulen=%s rest=%s' % (direction, sap_type, value.pop('len'), value.pop('decimals'), value.pop('ulen'), value)
+        print(key, 'direction=%s type=%s len=%s decimals=%s ulen=%s rest=%s' % (direction, sap_type, value.pop('len'), value.pop('decimals'), value.pop('ulen'), value))
 
 def main():
     print_rfc_interface(sys.argv[1])

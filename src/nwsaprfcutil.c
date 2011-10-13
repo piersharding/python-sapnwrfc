@@ -35,6 +35,12 @@ typedef enum { false, true } mybool;
 #endif
 
 
+/* be forward compatible */
+#ifndef staticforward
+#	define staticforward static
+#endif
+
+
 typedef struct SAPNW_CONN_INFO_rec {
                   RFC_CONNECTION_HANDLE handle;
                   RFC_CONNECTION_PARAMETER * loginParams;
@@ -326,7 +332,7 @@ static PyObject* sapnwrfc_connection_attributes(sapnwrfc_ConnObject *self, PyObj
 static void sapnwrfc_Conn_dealloc(sapnwrfc_ConnObject* self) {
 
     sapnwrfc_conn_close(self);
-  self->ob_type->tp_free((PyObject*)self);
+    Py_TYPE(self)->tp_free((PyObject *) self);
 }
 
 
@@ -467,7 +473,7 @@ static void sapnwrfc_FuncDesc_dealloc(sapnwrfc_FuncDescObject* self) {
   }
   */
   free(ptr);
-  self->ob_type->tp_free((PyObject*)self);
+  Py_TYPE(self)->tp_free((PyObject *) self);
 }
 
 
@@ -704,7 +710,7 @@ static void sapnwrfc_FuncCall_dealloc(sapnwrfc_FuncCallObject* self) {
   */
   ptr->desc_handle = NULL;
   free(ptr);
-  self->ob_type->tp_free((PyObject*)self);
+  Py_TYPE(self)->tp_free((PyObject *) self);
 }
 
 
@@ -2357,4 +2363,3 @@ initnwsaprfcutil(void)
     PyModule_AddObject(s, "RFCFunctionCallError", E_RFC_FUNCCALL);
 
 }
-
