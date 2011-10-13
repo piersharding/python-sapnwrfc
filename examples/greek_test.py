@@ -12,7 +12,7 @@ class sapnwrfctest(unittest.TestCase):
 
 
   def testConn1(self):
-    print "testConn1"
+    print("testConn1")
     conn = sapnwrfc.base.rfc_connect({'user': 'developer', 'passwd': 'developer'})
     self.assertNotEquals(conn, None)
     #print "connection attributes: ", conn.connection_attributes()
@@ -21,7 +21,7 @@ class sapnwrfctest(unittest.TestCase):
     self.assertEquals(conn.close(), 1)
 
   def testDeep2(self):
-    print "testDeep2"
+    print("testDeep2")
     conn = sapnwrfc.base.rfc_connect()
     self.assertNotEquals(conn, None)
     fds = conn.discover("STFC_DEEP_STRUCTURE")
@@ -69,7 +69,7 @@ class sapnwrfctest(unittest.TestCase):
 if __name__ == "__main__":
   import sys
   if sys.version < '2.2':
-    print "\n\n   You Must Have Python Version >= 2.2  To run saprfc \n\n"
+    print("\n\n   You Must Have Python Version >= 2.2  To run saprfc \n\n")
     sys.exit(1)
   import os
   path = ""
@@ -78,8 +78,8 @@ if __name__ == "__main__":
   elif os.listdir(os.path.join(os.getcwd(), '../')):
     path = os.path.join(os.getcwd(), '../build')
   else:
-    print "cant find ./build directory to load the saprfc module, try runnig from the package root dir"
-    print "   looked in:", os.getcwd(), " and ", os.path.join(os.getcwd(), '../')
+    print("cant find ./build directory to load the saprfc module, try runnig from the package root dir")
+    print("   looked in:", os.getcwd(), " and ", os.path.join(os.getcwd(), '../'))
     sys.exit(1)
 
   libdir = ""
@@ -87,13 +87,13 @@ if __name__ == "__main__":
     if i.startswith("lib"):
       libdir = os.path.join(path, i)
   if libdir == "":
-    print "cant find ./build directory to load the saprfc module, try runnig from the package root dir"
-    print "   looked in:", os.getcwd(), " and ", os.path.join(os.getcwd(), '../')
+    print("cant find ./build directory to load the saprfc module, try runnig from the package root dir")
+    print("   looked in:", os.getcwd(), " and ", os.path.join(os.getcwd(), '../'))
     sys.exit(1)
 
   sys.path.append(libdir)
 
-  print "using library path: " + libdir
+  print("using library path: " + libdir)
 
   import sapnwrfc
 

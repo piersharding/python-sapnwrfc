@@ -5,7 +5,7 @@ Python utils for RFC calls to SAP NetWeaver System
 
 import sys
 if sys.version < '2.4':
-    print 'Wrong Python Version (must be >=2.4) !!!'
+    print('Wrong Python Version (must be >=2.4) !!!')
     sys.exit(1)
 
 # load the native extensions
@@ -152,14 +152,14 @@ class FunctionCall:
         return "<FunctionCall %s instance at 0x%x>" % (self.name, id(self))
 
     def __getattr__(self, *args, **kwdargs):
-        if self.handle.parameters.has_key(args[0]):
+        if args[0] in self.handle.parameters:
             return self.handle.parameters[args[0]]
         else:
             return None
 
     def __call__(self, *args, **kwdargs):
         # REFACTOR: This seems not to make too much sense here ;-)
-        print "Hello!\n"
+        print("Hello!\n")
 
     def invoke(self):
         return self.handle.invoke()

@@ -5,13 +5,12 @@ Python utils for RFC calls to SAP NetWeaver System
 
 import sys
 if sys.version < '2.4':
-    print 'Wrong Python Version (must be >=2.4) !!!'
+    print('Wrong Python Version (must be >=2.4) !!!')
     sys.exit(1)
 
 from struct import *
 from string import *
 import re
-from types import *
 
 
 # Parameter types
@@ -118,37 +117,37 @@ class Parameter:
     # sanity for the underlying C extension
     def Value(self, val=None):
         if self.type == INT or self.type == INT2 or self.type == INT1:
-            if not type(val) == IntType:
+            if not type(val) == int:
                 raise ParameterException("Must be Fixnum for INT, INT1, and INT2 (%s/%d/%s)" % (self.name, self.type, type(val)))
         elif self.type == NUM:
-            if not type(val) == StringType:
+            if not type(val) == str:
                 raise ParameterException("Must be String for NUMC (%s/%d/%s)" % (self.name, self.type, type(val)))
         elif self.type == BCD:
-            if not type(val) == FloatType:
+            if not type(val) == float:
                 raise ParameterException("Must be Float or *NUM for BCD (%s/%d/%s)" % (self.name, self.type, type(val)))
             val = str(val)
         elif self.type == FLOAT:
-            if not type(val) == FloatType:
+            if not type(val) == float:
                 raise ParameterException("Must be Float for FLOAT (%s/%d/%s)" % (self.name, self.type, type(val)))
         elif self.type == STRING or self.type == XSTRING:
-            if not type(val) == StringType:
+            if not type(val) == str:
                 raise ParameterException("Must be String for STRING, and XSTRING (%s/%d/%s)" % (self.name, self.type, type(val)))
         elif self.type == BYTE:
-            if not type(val) == StringType:
+            if not type(val) == str:
                 raise ParameterException("Must be String for BYTE (%s/%d/%s)" % (self.name, self.type, type(val)))
         elif self.type == CHAR or self.type == DATE or self.type == TIME:
-            if not type(val) == StringType:
+            if not type(val) == str:
                 raise ParameterException("Must be String for CHAR, DATE, and TIME (%s/%d/%s)" % (self.name, self.type, type(val)))
         elif self.type == TABLE:
-            if not type(val) == ListType:
+            if not type(val) == list:
                 raise ParameterException("Must be Array for table value (%s/%s)" % (self.name, type(val)))
                 cnt = 0
                 for row in val:
                     cnt += 1
-                    if not type(row) == DictType:
+                    if not type(row) == dict:
                         raise ParameterException("Must be Hash for table row value (%s/%d/%s)" % (self.name, cnt, type(row)))
         elif self.type == STRUCTURE:
-            if not type(val) == DictType:
+            if not type(val) == dict:
                 raise ParameterException("Must be a Hash for a Structure Type (%s/%d/%s)" % (self.name, self.type, type(val)))
         else:
             raise ParameterException("unknown SAP data type (%s/%d)" % (self.name, self.type))
@@ -199,12 +198,12 @@ class Table(Parameter):
     # assign an Array, of rows represented by Hashes to the value of
     # the Table parameter.
     def Value(self, val=[]):
-        if not type(val) == ListType:
-            raise ParameterException("Must be ListType for table value (%s/%s)" % (self.name, type(val)))
+        if not type(val) == list:
+            raise ParameterException("Must be list for table value (%s/%s)" % (self.name, type(val)))
             cnt = 0
             for row in val:
                 cnt += 1
-                if not type(row) == DictType:
+                if not type(row) == dict:
                     raise ParameterException("Must be Hash for table row value (%s/%d/%s)" % (self.name, cnt, type(row)))
         self.value = val
 
