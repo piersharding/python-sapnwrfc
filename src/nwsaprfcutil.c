@@ -5,10 +5,25 @@
 
 #if PY_VERSION_HEX < 0x02050000 && !defined(PY_SSIZE_T_MIN)
 typedef int Py_ssize_t;
-#define PY_SSIZE_T_MAX INT_MAX
-#define PY_SSIZE_T_MIN INT_MIN
+#   define PY_SSIZE_T_MAX INT_MAX
+#   define PY_SSIZE_T_MIN INT_MIN
 #endif
 
+
+#if PY_MAJOR_VERSION >= 3
+
+#   define PyInt_AsLong PyLong_AsLong
+#   define PyInt_Check PyLong_Check
+#   define PyInt_FromLong PyLong_FromLong
+
+#   define PyString_AsString PyBytes_AsString
+#   define PyString_Check PyBytes_Check
+#   define PyString_FromFormat PyBytes_FromFormat
+#   define PyString_FromStringAndSize PyBytes_FromStringAndSize
+#   define PyString_FromString PyBytes_FromString
+#   define PyString_Size PyBytes_Size
+
+#endif
 
 /* SAP flag for Windows NT or 95 */
 #ifdef _WIN32
@@ -20,7 +35,12 @@ typedef int Py_ssize_t;
 #include <sapnwrfc.h>
 
 #if defined(SAPonNT)
-#include "windows.h"
+#   include "windows.h"
+#endif
+
+/* be paranoid about crucial preprocessor definitions */
+#ifndef SAPwithUNICODE
+#   error Code below assumes SAPwithUNICODE being defined, which is clearly not the case!
 #endif
 
 
@@ -102,7 +122,7 @@ SAP_UC * u8to16(PyObject *str);
 PyObject* u16to8c(SAP_UC * str, int len);
 PyObject* u16to8(SAP_UC * str);
 static PyObject* SAPNW_rfc_conn_error(PyObject* msg, int code, PyObject* key, PyObject* message);
-static PyObject* SAPNW_rfc_serv_error(PyObject* msg, int code, PyObject* key, PyObject* message);
+// static PyObject* SAPNW_rfc_serv_error(PyObject* msg, int code, PyObject* key, PyObject* message);
 static PyObject* SAPNW_rfc_call_error(PyObject* msg, int code, PyObject* key, PyObject* message);
 
 static PyObject * get_field_value(DATA_CONTAINER_HANDLE hcont, RFC_FIELD_DESC fieldDesc);
@@ -140,7 +160,7 @@ stop_execution (int sig){
 
 
 SAP_UC * u8to16c(char * str) {
-  RFC_RC rc;
+  //RFC_RC rc;
   RFC_ERROR_INFO errorInfo;
   SAP_UC *sapuc;
   unsigned sapucSize, resultLength;
@@ -151,38 +171,38 @@ SAP_UC * u8to16c(char * str) {
 
   resultLength = 0;
 
-  rc = RfcUTF8ToSAPUC((RFC_BYTE *)str, strlen(str), sapuc, &sapucSize, &resultLength, &errorInfo);
+  //rc = RfcUTF8ToSAPUC((RFC_BYTE *)str, strlen(str), sapuc, &sapucSize, &resultLength, &errorInfo);
+  RfcUTF8ToSAPUC((RFC_BYTE *)str, strlen(str), sapuc, &sapucSize, &resultLength, &errorInfo);
   return sapuc;
 }
 
 
 SAP_UC * u8to16(PyObject *str) {
-  RFC_RC rc;
+  //RFC_RC rc;
   RFC_ERROR_INFO errorInfo;
   SAP_UC *sapuc;
   unsigned sapucSize, resultLength;
-    PyObject *tmp;
+    PyObject *cleanup = NULL;
 
     if (PyUnicode_Check(str)) {
-      tmp = PyUnicode_AsUTF8String(str);
-    }
-    else {
-      tmp = str;
+      str = cleanup = PyUnicode_AsUTF8String(str);
     }
 
-  sapucSize = PyString_Size(tmp) + 1;
+  sapucSize = PyString_Size(str) + 1;
   sapuc = mallocU(sapucSize);
   memsetU(sapuc, 0, sapucSize);
 
   resultLength = 0;
 
-  rc = RfcUTF8ToSAPUC((RFC_BYTE *)PyString_AsString(tmp), PyString_Size(tmp), sapuc, &sapucSize, &resultLength, &errorInfo);
+  //rc = RfcUTF8ToSAPUC((RFC_BYTE *)PyString_AsString(str), PyString_Size(str), sapuc, &sapucSize, &resultLength, &errorInfo);
+  RfcUTF8ToSAPUC((RFC_BYTE *)PyString_AsString(str), PyString_Size(str), sapuc, &sapucSize, &resultLength, &errorInfo);
+  Py_XDECREF(cleanup);
   return sapuc;
 }
 
 
 PyObject* u16to8c(SAP_UC * str, int len) {
-  RFC_RC rc;
+  //RFC_RC rc;
   RFC_ERROR_INFO errorInfo;
   unsigned utf8Size, resultLength;
   char * utf8;
@@ -194,7 +214,8 @@ PyObject* u16to8c(SAP_UC * str, int len) {
 
   resultLength = 0;
 
-  rc = RfcSAPUCToUTF8(str, len, (RFC_BYTE *)utf8, &utf8Size, &resultLength, &errorInfo);
+  //rc = RfcSAPUCToUTF8(str, len, (RFC_BYTE *)utf8, &utf8Size, &resultLength, &errorInfo);
+  RfcSAPUCToUTF8(str, len, (RFC_BYTE *)utf8, &utf8Size, &resultLength, &errorInfo);
   py_str = PyString_FromStringAndSize(utf8, resultLength);
   free(utf8);
   return py_str;
@@ -202,7 +223,7 @@ PyObject* u16to8c(SAP_UC * str, int len) {
 
 
 PyObject* u16to8(SAP_UC * str) {
-  RFC_RC rc;
+  //RFC_RC rc;
   RFC_ERROR_INFO errorInfo;
   unsigned utf8Size, resultLength;
   char * utf8;
@@ -214,7 +235,8 @@ PyObject* u16to8(SAP_UC * str) {
 
   resultLength = 0;
 
-  rc = RfcSAPUCToUTF8(str, strlenU(str), (RFC_BYTE *)utf8, &utf8Size, &resultLength, &errorInfo);
+  //rc = RfcSAPUCToUTF8(str, strlenU(str), (RFC_BYTE *)utf8, &utf8Size, &resultLength, &errorInfo);
+  RfcSAPUCToUTF8(str, strlenU(str), (RFC_BYTE *)utf8, &utf8Size, &resultLength, &errorInfo);
   py_str = PyString_FromStringAndSize(utf8, resultLength);
   free(utf8);
   return py_str;
@@ -228,11 +250,13 @@ static PyObject* SAPNW_rfc_conn_error(PyObject* msg, int code, PyObject* key, Py
 }
 
 
+/*
 static PyObject* SAPNW_rfc_serv_error(PyObject* msg, int code, PyObject* key, PyObject* message) {
 
   PyErr_Format(E_RFC_COMMS, "RFC SERVER ERROR: %s / %d / %s / %s", PyString_AsString(msg), code, PyString_AsString(key), PyString_AsString(message));
   return NULL;
 }
+*/
 
 
 static PyObject* SAPNW_rfc_call_error(PyObject* msg, int code, PyObject* key, PyObject* message) {
@@ -404,11 +428,25 @@ static int sapnwrfc_Conn_init(sapnwrfc_ConnObject *self, PyObject *args) {
   pos = 0;
   i = 0;
   while (PyDict_Next(connParms, &pos, &parm, &hval)) {
-     if (strcmp(PyString_AsString(hval), "tpname") == 0)
-       server = true;
-     loginParams[i].name = (SAP_UC *) u8to16(parm);
-     loginParams[i].value = (SAP_UC *) u8to16(hval);
-     i++;
+    PyObject *cleanup_parm = NULL;
+    PyObject *cleanup_hval = NULL;
+
+    if (PyUnicode_Check(parm)) {
+      cleanup_parm = parm = PyUnicode_AsUTF8String(parm);
+    }
+
+    if (PyUnicode_Check(hval)) {
+      cleanup_hval = hval = PyUnicode_AsUTF8String(hval);
+    }
+
+    if (strcmp(PyString_AsString(hval), "tpname") == 0)
+      server = true;
+    loginParams[i].name = (SAP_UC *) u8to16(parm);
+    loginParams[i].value = (SAP_UC *) u8to16(hval);
+    i++;
+
+    Py_XDECREF(cleanup_parm);
+    Py_XDECREF(cleanup_hval);
   }
 
   if (server) {
@@ -1322,7 +1360,7 @@ void set_date_value(DATA_CONTAINER_HANDLE hcont, SAP_UC *name, PyObject * value)
     return;
   }
   p_value = u8to16(value);
-  memcpy((char *)date_value+0, (char *)p_value, 16);
+  memcpy((char *)date_value+0, (char *)p_value, sizeof(date_value)-0);
   free(p_value);
 
   rc = RfcSetDate(hcont, name, date_value, &errorInfo);
@@ -1355,7 +1393,7 @@ void set_time_value(DATA_CONTAINER_HANDLE hcont, SAP_UC *name, PyObject * value)
     return;
   }
   p_value = u8to16(value);
-  memcpy((char *)time_value+0, (char *)p_value, 12);
+  memcpy((char *)time_value+0, (char *)p_value, sizeof(time_value)-0);
   free(p_value);
 
   rc = RfcSetTime(hcont, name, time_value, &errorInfo);
@@ -1644,7 +1682,7 @@ void set_structure_value(DATA_CONTAINER_HANDLE hcont, SAP_UC *name, PyObject * v
   RFC_TYPE_DESC_HANDLE typeHandle;
   RFC_FIELD_DESC fieldDesc;
   SAP_UC *p_name;
-  unsigned i, idx;
+  unsigned i;
   Py_ssize_t pos;
   PyObject * key, * val;
 
@@ -1652,8 +1690,6 @@ void set_structure_value(DATA_CONTAINER_HANDLE hcont, SAP_UC *name, PyObject * v
      SAPNW_rfc_call_error1("RfcSetStructure invalid Input value type:", PyString_AsString(u16to8(name)));
     return;
   }
-
-  idx = PyDict_Size(value);
 
   rc = RfcGetStructure(hcont, name, &line, &errorInfo);
   if (rc != RFC_OK) {
@@ -1777,7 +1813,7 @@ void set_table_line(RFC_STRUCTURE_HANDLE line, PyObject * value){
   RFC_ERROR_INFO errorInfo;
   RFC_TYPE_DESC_HANDLE typeHandle;
   RFC_FIELD_DESC fieldDesc;
-  unsigned i, idx;
+  unsigned i;
   SAP_UC * p_name;
   Py_ssize_t pos;
   PyObject * key, * val;
@@ -1787,7 +1823,6 @@ void set_table_line(RFC_STRUCTURE_HANDLE line, PyObject * value){
      SAPNW_rfc_call_error1("set_table_line invalid Input value type", "");
     return;
   }
-  idx = PyDict_Size(value);
 
   typeHandle = RfcDescribeType(line, &errorInfo);
   if (typeHandle == NULL) {
@@ -1857,7 +1892,7 @@ void set_table_value(DATA_CONTAINER_HANDLE hcont, SAP_UC *name, PyObject * value
 
 void set_parameter_value(SAPNW_FUNC *fptr, PyObject * name, PyObject * value){
 
-  SAPNW_CONN_INFO *cptr;
+  //SAPNW_CONN_INFO *cptr;
   SAPNW_FUNC_DESC *dptr;
   RFC_RC rc = RFC_OK;
   RFC_ERROR_INFO errorInfo;
@@ -1870,7 +1905,7 @@ void set_parameter_value(SAPNW_FUNC *fptr, PyObject * name, PyObject * value){
   }
 
   dptr = fptr->desc_handle;
-  cptr = dptr->conn_handle;
+  //cptr = dptr->conn_handle;
 
   /* get the parameter description */
   rc = RfcGetParameterDescByName(dptr->handle, (p_name = u8to16(name)), &paramDesc, &errorInfo);
@@ -1956,16 +1991,16 @@ void set_parameter_value(SAPNW_FUNC *fptr, PyObject * name, PyObject * value){
 /* Create a Function Module handle to be used for an RFC call */
 static PyObject * sapnwrfc_set_active(sapnwrfc_FuncCallObject* self, PyObject * name, PyObject * active){
 
-  SAPNW_CONN_INFO *cptr;
-  SAPNW_FUNC_DESC *dptr;
+  //SAPNW_CONN_INFO *cptr;
+  //SAPNW_FUNC_DESC *dptr;
   SAPNW_FUNC *fptr;
   RFC_RC rc = RFC_OK;
   RFC_ERROR_INFO errorInfo;
   SAP_UC *p_name;
 
   fptr = self->handle;
-  dptr = fptr->desc_handle;
-  cptr = dptr->conn_handle;
+  //dptr = fptr->desc_handle;
+  //cptr = dptr->conn_handle;
 
   rc = RfcSetParameterActive(fptr->handle, (p_name = u8to16(name)), PyLong_AsLong(active), &errorInfo);
   free(p_name);
@@ -1992,7 +2027,7 @@ static PyObject * sapnwrfc_invoke(sapnwrfc_FuncCallObject* self){
   RFC_TABLE_HANDLE tableHandle;
   PyObject *parameters, *parm, *name, *value, *row;
   SAP_UC *p_name;
-  int idx, r;
+  int r;
   unsigned tabLen;
   RFC_STRUCTURE_HANDLE line;
   Py_ssize_t pos;
@@ -2009,7 +2044,7 @@ static PyObject * sapnwrfc_invoke(sapnwrfc_FuncCallObject* self){
   PyObject_Print(parameters, stderr, Py_PRINT_RAW);
   fprintf(stderr, "\n");
   */
-  idx = PyDict_Size(parameters);
+  //idx = PyDict_Size(parameters);
   //fprintf(stderr, "parameters: %d\n", idx);
 
   pos = 0;
@@ -2144,7 +2179,9 @@ static PyMethodDef sapnwrfc_Conn_methods[] = {
 
 static PyTypeObject sapnwrfc_ConnType = {
     PyObject_HEAD_INIT(NULL)
+#if PY_MAJOR_VERSION < 3
     0,                         /*ob_size*/
+#endif
     "nwsaprfcutil.Conn",             /*tp_name*/
     sizeof(sapnwrfc_ConnObject),             /*tp_basicsize*/
     0,                         /*tp_itemsize*/
@@ -2209,7 +2246,9 @@ static PyMethodDef sapnwrfc_FuncDesc_methods[] = {
 
 static PyTypeObject sapnwrfc_FuncDescType = {
     PyObject_HEAD_INIT(NULL)
+#if PY_MAJOR_VERSION < 3
     0,                         /*ob_size*/
+#endif
     "nwsaprfcutil.FuncDesc",             /*tp_name*/
     sizeof(sapnwrfc_FuncDescObject),             /*tp_basicsize*/
     0,                         /*tp_itemsize*/
@@ -2270,7 +2309,9 @@ static PyMethodDef sapnwrfc_FuncCall_methods[] = {
 
 static PyTypeObject sapnwrfc_FuncCallType = {
     PyObject_HEAD_INIT(NULL)
+#if PY_MAJOR_VERSION < 3
     0,                         /*ob_size*/
+#endif
     "nwsaprfcutil.FuncCall",             /*tp_name*/
     sizeof(sapnwrfc_FuncCallObject),             /*tp_basicsize*/
     0,                         /*tp_itemsize*/
@@ -2316,12 +2357,38 @@ static PyMethodDef module_methods[] = {
 };
 
 
+/* Python3 needs a bit more care apparently */
+static const char
+    module_name[] = "nwsaprfcutil",
+    module_documentation[] = "nwsaprfc extension type.";
 
-#ifndef PyMODINIT_FUNC  /* declarations for DLL import/export */
-#define PyMODINIT_FUNC void
-#endif
+#if PY_MAJOR_VERSION >= 3
+
+static struct PyModuleDef moduledef = {
+        PyModuleDef_HEAD_INIT,
+        module_name,
+        module_documentation,
+        -1, // amount of memory in bytes to reserve per sub-interpreter, or -1 if not required
+        module_methods,
+};
+
+#   define INITERROR return NULL
+
+PyMODINIT_FUNC
+PyInit_nwsaprfcutil(void)
+
+#else
+
+#   define INITERROR return
+
+#   ifndef PyMODINIT_FUNC  /* declarations for DLL import/export */
+#       define PyMODINIT_FUNC void
+#   endif
+
 PyMODINIT_FUNC
 initnwsaprfcutil(void)
+
+#endif
 {
     PyObject* m;
     PyObject* s;
@@ -2332,19 +2399,23 @@ initnwsaprfcutil(void)
     E_RFC_FUNCCALL = PyErr_NewException("sapnwrfc.RFCFunctionCallError", NULL, NULL);
 
     if (PyType_Ready(&sapnwrfc_ConnType) < 0)
-        return;
+        INITERROR;
 
     if (PyType_Ready(&sapnwrfc_FuncDescType) < 0)
-        return;
+        INITERROR;
 
     if (PyType_Ready(&sapnwrfc_FuncCallType) < 0)
-        return;
+        INITERROR;
 
-    m = Py_InitModule3("nwsaprfcutil", module_methods,
-                       "nwsaprfc extension type.");
+#if PY_MAJOR_VERSION >= 3
+    m = PyModule_Create(&moduledef);
+#else
+    m = Py_InitModule3(module_name, module_methods,
+                       module_documentation);
+#endif
 
     if (m == NULL)
-      return;
+      INITERROR;
 
     Py_INCREF(&sapnwrfc_ConnType);
     PyModule_AddObject(m, "Conn", (PyObject *)&sapnwrfc_ConnType);
@@ -2354,7 +2425,11 @@ initnwsaprfcutil(void)
     PyModule_AddObject(m, "FuncCall", (PyObject *)&sapnwrfc_FuncCallType);
 
     // find sapnwrfc by name and then add the errors to it
+#if PY_MAJOR_VERSION >= 3
+    s = PyImport_Import(PyUnicode_FromString("sapnwrfc"));
+#else
     s = PyImport_Import(PyString_FromString("sapnwrfc"));
+#endif
     Py_INCREF(E_RFC_COMMS);
     PyModule_AddObject(s, "RFCCommunicationError", E_RFC_COMMS);
     Py_INCREF(E_RFC_SERVER);
@@ -2362,4 +2437,7 @@ initnwsaprfcutil(void)
     Py_INCREF(E_RFC_FUNCCALL);
     PyModule_AddObject(s, "RFCFunctionCallError", E_RFC_FUNCCALL);
 
+#if PY_MAJOR_VERSION >= 3
+    return m;
+#endif
 }

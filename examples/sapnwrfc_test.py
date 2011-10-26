@@ -17,7 +17,7 @@ class sapnwrfctest(unittest.TestCase):
     self.assertNotEquals(conn, None)
     #print "connection attributes: ", conn.connection_attributes()
     attr = conn.connection_attributes()
-    self.assertEquals(attr['partnerHost'], 'gecko')
+    self.assertEquals(attr['partnerHost'], 'nplhost')
     self.assertEquals(conn.close(), 1)
 
   def testConn2(self):
@@ -26,7 +26,7 @@ class sapnwrfctest(unittest.TestCase):
     self.assertNotEquals(conn, None)
     #print "connection attributes: ", conn.connection_attributes()
     attr = conn.connection_attributes()
-    self.assertEquals(attr['partnerHost'], 'gecko')
+    self.assertEquals(attr['partnerHost'], 'nplhost')
     self.assertEquals(conn.close(), 1)
 
   def testConn3(self):
@@ -36,7 +36,7 @@ class sapnwrfctest(unittest.TestCase):
       conn = sapnwrfc.base.rfc_connect()
       self.assertNotEquals(conn, None)
       attr = conn.connection_attributes()
-      self.assertEquals(attr['partnerHost'], 'gecko')
+      self.assertEquals(attr['partnerHost'], 'nplhost')
       self.assertEquals(conn.close(), 1)
 
   def testFuncDesc1(self):

@@ -35,3 +35,6 @@ Wed Oct  5 05:33:43 NZDT 2011
 Fri Oct 14 05:56:17 NZDT 2011
 * Fixes from Marcel Carl, and Christian Trefzer for compatibility with 3.1x and 2.6 and above
   - thanks guys!
+
+Thu Oct 27 06:10:39 NZDT 2011
+* more patching for compatibility with 3.x thanks Christian Trefzer

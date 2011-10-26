@@ -67,7 +67,7 @@ class base(object):
         # Overload the YAML file config with parameters passed to 
         # rfc_connect
         if not cfg == None:
-            if not type(cfg) == DictType:
+            if not type(cfg) == dict:
                 raise RFCException("Config passed to rfc_connect must be a Dictionary object")
             for k, v in cfg.items():
                 if k in CONFIG_OK:
