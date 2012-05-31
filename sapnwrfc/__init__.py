@@ -53,7 +53,8 @@ class base(object):
         # REFACTOR: there is no need to depend on yaml
         import yaml
 
-        cls.configuration = yaml.load(file(cls.config_location, 'rb').read())
+        cls.configuration = yaml.load(open(cls.config_location, 'rb').read())
+        #cls.configuration = yaml.load(open(cls.config_location, 'rb').read())
         return cls.configuration
 
     @classmethod

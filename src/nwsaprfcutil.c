@@ -134,10 +134,10 @@ void set_table_value(DATA_CONTAINER_HANDLE hcont, SAP_UC *name, PyObject * value
 static void * make_space(int len){
 
     char * ptr;
-    ptr = malloc( len + 1 );
+    ptr = malloc( len + 2 );
     if ( ptr == NULL )
       return NULL;
-    memset(ptr, 0, len + 1);
+    memset(ptr, 0, len + 2);
     return ptr;
 }
 
@@ -208,9 +208,9 @@ PyObject* u16to8c(SAP_UC * str, int len) {
   char * utf8;
   PyObject * py_str;
 
-  utf8Size = len * 2;
-  utf8 = malloc(utf8Size + 1);
-  memset(utf8, 0, utf8Size + 1);
+  utf8Size = len * 4;
+  utf8 = malloc(utf8Size + 2);
+  memset(utf8, 0, utf8Size + 2);
 
   resultLength = 0;
 
@@ -229,9 +229,9 @@ PyObject* u16to8(SAP_UC * str) {
   char * utf8;
   PyObject * py_str;
 
-  utf8Size = strlenU(str) * 2;
-  utf8 = malloc(utf8Size + 1);
-  memset(utf8, 0, utf8Size + 1);
+  utf8Size = strlenU(str) * 4;
+  utf8 = malloc(utf8Size + 2);
+  memset(utf8, 0, utf8Size + 2);
 
   resultLength = 0;
 
@@ -885,7 +885,7 @@ static PyObject * get_string_value(DATA_CONTAINER_HANDLE hcont, SAP_UC *name){
   if (strLen == 0)
     return Py_BuildValue("s", ( char * ) "");
 
-  buffer = make_space(strLen*2 + 2);
+  buffer = make_space(strLen*4);
   rc = RfcGetString(hcont, name, (SAP_UC *)buffer, strLen + 2, &retStrLen, &errorInfo);
   if (rc != RFC_OK) {
      return SAPNW_rfc_call_error(PyString_FromFormat("Problem with RfcGetString: %s",
@@ -947,7 +947,7 @@ static PyObject * get_num_value(DATA_CONTAINER_HANDLE hcont, SAP_UC *name, unsig
   char * buffer;
   PyObject * val;
 
-  buffer = make_space(ulen*2+1); /* seems that you need 2 null bytes to terminate a string ...*/
+  buffer = make_space(ulen*2); /* seems that you need 2 null bytes to terminate a string ...*/
   rc = RfcGetNum(hcont, name, (RFC_NUM *)buffer, ulen, &errorInfo);
   if (rc != RFC_OK) {
      return SAPNW_rfc_call_error(PyString_FromFormat("Problem with RfcGetNum: %s",
@@ -1000,7 +1000,7 @@ static PyObject * get_char_value(DATA_CONTAINER_HANDLE hcont, SAP_UC *name, unsi
   unsigned utf8Size, resultLength;
   char * utf8;
 
-    buffer = make_space((ulen + 1)*4);
+    buffer = make_space(ulen*4);
 
     rc = RfcGetChars(hcont, name, (RFC_CHAR *)buffer, ulen, &errorInfo);
     if (rc != RFC_OK) {

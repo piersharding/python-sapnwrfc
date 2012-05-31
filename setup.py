@@ -194,7 +194,7 @@ LONG_DESCRIPTION = """\
 sapnwrfc - A Python RFC interface to SAP NetWeaver R/3 systems
 --------------------------------------------------------------
 
-Copyright (C) Piers Harding 2006 - 2010, All rights reserved
+Copyright (C) Piers Harding 2006 - 2012, All rights reserved
 
 == Summary
 
@@ -259,7 +259,7 @@ Lesser General Public License for more details.
 A copy of the GNU Lesser General Public License (version 2.1) 
 can be found at http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html
 """
-setup(name = "sapnwrfc", version = "0.18",license = "LGPL v2.1",
+setup(name = "sapnwrfc", version = "0.19",license = "LGPL v2.1",
       description="SAP NetWeaver R/3 RFC Connector for Python",
       long_description=LONG_DESCRIPTION,
       author="Piers Harding",

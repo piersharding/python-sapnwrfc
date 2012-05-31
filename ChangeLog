@@ -38,3 +38,6 @@ Fri Oct 14 05:56:17 NZDT 2011
 
 Thu Oct 27 06:10:39 NZDT 2011
 * more patching for compatibility with 3.x thanks Christian Trefzer
+
+Fri Jun  1 09:48:49 NZST 2012
+* fix 4 byte chars
